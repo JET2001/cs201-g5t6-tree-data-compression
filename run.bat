@@ -1,0 +1,1 @@
+java -classpath target app.App

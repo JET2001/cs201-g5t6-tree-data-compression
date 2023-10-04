@@ -1,0 +1,1 @@
+javac -d target -sourcepath source_files "source_files/app/App.java"
