@@ -20,6 +20,7 @@ public class App {
             }
         };
 
+        // Change compressed type if required
         short[][][] compressed = UtilityTest.Compress(img);
 
         System.out.println("compressed = " + compressed);
