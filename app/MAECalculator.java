@@ -1,3 +1,5 @@
+package app;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -5,8 +7,8 @@ import javax.imageio.ImageIO;
 
 public class MAECalculator {
     public static void main(String[] args) throws IOException {
-        BufferedImage originalImage = ImageIO.read(new File("Original/nasilemak.jpg"));
-        BufferedImage compressedImage = ImageIO.read(new File("Decompressed/nasilemakdecompressedfrompng.jpg"));
+        BufferedImage originalImage = ImageIO.read(new File("../Original/nasilemak.jpg"));
+        BufferedImage compressedImage = ImageIO.read(new File("../Decompressed/nasilemakdecompressedfrompng.jpg"));
 
         double mae = calculateMAE(originalImage, compressedImage);
         System.out.println("Mean Absolute Error (MAE): " + mae);

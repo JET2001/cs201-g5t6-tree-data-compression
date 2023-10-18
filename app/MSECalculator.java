@@ -1,3 +1,5 @@
+package app;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -8,8 +10,8 @@ public class MSECalculator {
     public static void main(String[] args) {
         try {
             // Load the original and decompressed images
-            BufferedImage originalImage = ImageIO.read(new File("Original/nasilemak.jpg"));
-            BufferedImage decompressedImage = ImageIO.read(new File("Decompressed/nasilemakdecompressedfrompng.jpg"));
+            BufferedImage originalImage = ImageIO.read(new File("../Original/nasilemak.jpg")); 
+            BufferedImage decompressedImage = ImageIO.read(new File("../Decompressed/nasilemakdecompressedfrompng.jpg"));
 
             // Check if the images have the same dimensions
             if (originalImage.getWidth() != decompressedImage.getWidth() || 
