@@ -20,13 +20,13 @@ public class App {
         Utility Utility = new Utility();
 
         //Define original file directory to loop through
-        String ImageDirectory = "../Original/";
-
+        String ImageDirectory = "./Original/";
         // List all files in the directory
         File directory = new File(ImageDirectory);
         File[] files = directory.listFiles();
 
         if (files != null) {
+            System.out.println("hello");
             for (File file : files) {
                 if (file.isFile()) {
                     String imageName = file.getName();
