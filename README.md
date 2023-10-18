@@ -2,7 +2,7 @@
 CS201 G5T6 Tree Data Compression
 
 ## Run the Project
-To run the project, add your implementation of Utility in a different java package and modify the import in `App.java`. 
+To run the project, add your implementation of Utility in a different java package **and modify the import in `App.java`**. 
 
 In the main directory, run 
 ```
@@ -12,6 +12,8 @@ MAC commands may be slightly different. If you are on MAC and this doesn't work,
 
 ## Image files
 Place the images in the root directory (NOT inside the `app/` directory). The paths to the folders have been modified in the package app (they have been prefixed with a `../` from the original code given.)
+
+## Directory Structure
 ```
 / - CS201-G5T6-Tree-Data-Comp
     | - app/
@@ -28,5 +30,3 @@ Place the images in the root directory (NOT inside the `app/` directory). The pa
     | - <OTHER UTILITY IMPLEMENTATION>/
         | - Utility.java // it should also be named Utility.java
 ```
-
-
