@@ -9,7 +9,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 // ====== Import the correct utility file here =====
-import utility.*;
+// import utility.*;
+import utility_huffman.*;
 
 // =================================================
 
