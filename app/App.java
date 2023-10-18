@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
+import other_metrics.EntropyCalculator;
 // ====== Import the correct utility file here =====
 import utility.*;
 
@@ -111,6 +112,9 @@ public class App {
                     double PSNR = PSNRCalculator.calculatePSNR(originalimage, decompressedimage);
                     System.out.println("PSNR of :" + imageName + " is " + PSNR);   
 
+                    // Calculate Entropy Loss
+                    double deltaH = EntropyCalculator.calculateEntropyLoss(originalimage, decompressedimage);
+                    System.out.println("Entropy Loss of :" + imageName + " is " + deltaH);
                 }
             }
         }
