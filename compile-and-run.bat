@@ -1,6 +1,11 @@
 @echo off
+del /Q /F /S "./compiled/*"
 javac -d compiled -sourcepath . "app/App.java"
-echo "Compilation successful, now running..." 
-@REM java -classpath compiled app.App (Why is this not working)
-cd compiled
-java app.App
+
+if %errorlevel% equ 0 (
+    echo Compilation successful. Now running...
+    cd compiled
+    java app.App
+) else (
+    echo Compilation failed. 
+)

@@ -9,8 +9,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 // ====== Import the correct utility file here =====
-// import utility.*;
-import utility_huffman.*;
+import utility_sample.*;
+// import utility_huffman.Utility;
 
 // =================================================
 
@@ -21,7 +21,7 @@ public class App {
         Utility Utility = new Utility();
 
         //Define original file directory to loop through
-        String ImageDirectory = "./Original/";
+        String ImageDirectory = "../Original/";
         // List all files in the directory
         File directory = new File(ImageDirectory);
         File[] files = directory.listFiles();
