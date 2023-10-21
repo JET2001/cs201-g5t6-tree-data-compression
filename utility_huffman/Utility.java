@@ -2,6 +2,7 @@ package utility_huffman;
 
 import java.util.*;
 import java.io.*;
+import java.nio.ByteBuffer;
 
 public class Utility {
     class HuffmanTree {
@@ -14,6 +15,7 @@ public class Utility {
     }
 
     class Compare implements Comparator<HuffmanTree> {
+
         @Override
         public int compare(HuffmanTree o1, HuffmanTree o2) {
             if (o1.weight < o2.weight)
@@ -40,14 +42,41 @@ public class Utility {
 
     private PriorityQueue<HuffmanTree> queue = null;
 
-    // Compress the input pixel data and save it as the output file
-    public void Compress(int[][][] pixels, String outputFileName) throws IOException {
+    // Compress the input file and save it as the output file
+    public void Compress(int[][][] pixels, String compressed_file_name) throws IOException {
+
+        int width = pixels.length;
+        int height = pixels[0].length;
+        byte[] pixelData1D = new byte[width * height * 3 + 8]; // Add 8 bytes for width and height
+
+        // Store the width and height at the beginning of the array
+        ByteBuffer buffer = ByteBuffer.wrap(pixelData1D);
+        buffer.putInt(width);
+        buffer.putInt(height);
+
+        int index = 8; // Start after the width and height
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                pixelData1D[index++] = (byte) pixels[x][y][0]; // Red
+                pixelData1D[index++] = (byte) pixels[x][y][1]; // Green
+                pixelData1D[index++] = (byte) pixels[x][y][2]; // Blue
+            }
+        }
+        File inputFile = File.createTempFile("temp", null);
+        try (FileOutputStream fos = new FileOutputStream(inputFile)) {
+            fos.write(pixelData1D);
+        }
+
         Compare comp = new Compare();
         queue = new PriorityQueue<HuffmanTree>(12, comp);
         HashMap<Byte, String> map = new HashMap<Byte, String>();
 
         int i, char_kinds = 0;
-        int file_len = 0;
+        int char_temp, file_len = 0;
+
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        ObjectOutputStream oos = null;
 
         int node_num;
         HuffmanTree[] huf_tree = null;
@@ -56,123 +85,138 @@ public class Utility {
 
         // Initialize frequency array for each character
         for (i = 0; i < 256; ++i) {
+
             tmp_nodes[i] = new Node();
             tmp_nodes[i].weight = 0;
             tmp_nodes[i].bit = (byte) i;
         }
 
-        // Calculate character frequencies from pixel data
-        for (int[][] row : pixels) {
-            for (int[] pixel : row) {
-                byte red = (byte) pixel[0];
-                byte green = (byte) pixel[1];
-                byte blue = (byte) pixel[2];
-                
-                tmp_nodes[red & 0xFF].weight++;
-                tmp_nodes[green & 0xFF].weight++;
-                tmp_nodes[blue & 0xFF].weight++;
-                
-                file_len += 3;
-            }
-        }
-
+        File outputFile = new File(compressed_file_name);
         try {
-            // Create Huffman tree and generate codes
-            node_num = 2 * char_kinds - 1;
-            huf_tree = new HuffmanTree[node_num];
-            for (i = 0; i < char_kinds; ++i) {
-                huf_tree[i] = new HuffmanTree();
-                huf_tree[i].bit = tmp_nodes[i].bit;
-                huf_tree[i].weight = tmp_nodes[i].weight;
-                huf_tree[i].parent = 0;
-                huf_tree[i].index = i;
-                queue.add(huf_tree[i]);
+            fis = new FileInputStream(inputFile);
+            fos = new FileOutputStream(outputFile);
+            oos = new ObjectOutputStream(fos);
+
+            // Calculate character frequencies
+            while ((char_temp = fis.read()) != -1) {
+                ++tmp_nodes[char_temp].weight;
+                ++file_len;
             }
-            for (; i < node_num; ++i) {
-                huf_tree[i] = new HuffmanTree();
-                huf_tree[i].parent = 0;
+            fis.close();
+            Arrays.sort(tmp_nodes);
+
+            // Calculate the number of different characters
+            for (i = 0; i < 256; ++i) {
+                if (tmp_nodes[i].weight == 0)
+                    break;
             }
-            createTree(huf_tree, char_kinds, node_num, queue);
-            hufCode(huf_tree, char_kinds);
+            char_kinds = i;
 
-            // Start saving compressed data
-            FileOutputStream fos = new FileOutputStream(outputFileName);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            if (char_kinds == 1) {
+                // Handle the case with only one character
+                oos.writeInt(char_kinds);
+                oos.writeByte(tmp_nodes[0].bit);
+                oos.writeInt(tmp_nodes[0].weight);
+            } else {
+                node_num = 2 * char_kinds - 1;
+                huf_tree = new HuffmanTree[node_num];
+                for (i = 0; i < char_kinds; ++i) {
+                    huf_tree[i] = new HuffmanTree();
+                    huf_tree[i].bit = tmp_nodes[i].bit;
+                    huf_tree[i].weight = tmp_nodes[i].weight;
+                    huf_tree[i].parent = 0;
+                    huf_tree[i].index = i;
+                    queue.add(huf_tree[i]);
+                }
+                tmp_nodes = null;
 
-            // Write character kinds, character frequencies, and file length
-            oos.writeInt(char_kinds);
-            for (i = 0; i < char_kinds; ++i) {
-                oos.writeByte(huf_tree[i].bit);
-                oos.writeInt(huf_tree[i].weight);
-                map.put(huf_tree[i].bit, huf_tree[i].code);
-            }
-            oos.writeInt(file_len);
+                for (; i < node_num; ++i) {
+                    huf_tree[i] = new HuffmanTree();
+                    huf_tree[i].parent = 0;
+                }
 
-            // Write Huffman-coded data
-            int currentByte = 0;
-            int bitsFilled = 0;
+                // Create Huffman tree
+                createTree(huf_tree, char_kinds, node_num, queue);
+                // Generate Huffman codes
+                hufCode(huf_tree, char_kinds);
+                oos.writeInt(char_kinds);
+                for (i = 0; i < char_kinds; ++i) {
+                    oos.writeByte(huf_tree[i].bit);
+                    oos.writeInt(huf_tree[i].weight);
+                    map.put(huf_tree[i].bit, huf_tree[i].code);
+                }
+                oos.writeInt(file_len);
+                fis = new FileInputStream(inputFile);
+                code_buf = "";
 
-            for (int[][] row : pixels) {
-                for (int[] pixel : row) {
-                    byte char_temp = (byte) pixel[0];
-                    String code = map.get(char_temp);
-                    for (char bit : code.toCharArray()) {
-                        currentByte <<= 1;
-                        if (bit == '1') {
-                            currentByte |= 1;
+                // Save Huffman code which has been converted into binary
+                while ((char_temp = fis.read()) != -1) {
+                    code_buf += map.get((byte) char_temp);
+
+                    while (code_buf.length() >= 8) {
+                        char_temp = 0;
+                        for (i = 0; i < 8; ++i) {
+                            char_temp <<= 1;
+                            if (code_buf.charAt(i) == '1')
+                                char_temp |= 1;
                         }
-                        bitsFilled++;
-                        if (bitsFilled == 8) {
-                            oos.writeByte((byte) currentByte);
-                            currentByte = 0;
-                            bitsFilled = 0;
-                        }
+                        oos.writeByte((byte) char_temp);
+                        code_buf = code_buf.substring(8);
                     }
                 }
-            }
 
-            // Flush any remaining bits
-            if (bitsFilled > 0) {
-                currentByte <<= (8 - bitsFilled);
-                oos.writeByte((byte) currentByte);
+                // If the length of the last code is not 8 bits, add 0 to fill up
+                if (code_buf.length() > 0) {
+                    char_temp = 0;
+                    for (i = 0; i < code_buf.length(); ++i) {
+                        char_temp <<= 1;
+                        if (code_buf.charAt(i) == '1')
+                            char_temp |= 1;
+                    }
+                    char_temp <<= (8 - code_buf.length());
+                    oos.writeByte((byte) char_temp);
+                }
             }
-
             oos.close();
-            fos.close();
+            fis.close();
+            inputFile.delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // Decompress the input file and return the decompressed pixel data
     public int[][][] Decompress(String inputFileName) throws IOException, ClassNotFoundException {
         Compare comp = new Compare();
         queue = new PriorityQueue<HuffmanTree>(12, comp);
-    
         int i;
         int file_len = 0;
         int writen_len = 0;
-    
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        ObjectInputStream ois = null;
+
         int char_kinds = 0;
-        int node_num = 0;
+        int node_num;
         HuffmanTree[] huf_tree = null;
+        byte code_temp;
         int root;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    
+
+        File inputFile = new File(inputFileName);
+        File outputFile = new File(inputFile + ".decompressed");
         try {
-            FileInputStream fis = new FileInputStream(inputFileName);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-    
+            fis = new FileInputStream(inputFile);
+            ois = new ObjectInputStream(fis);
+            fos = new FileOutputStream(outputFile);
+
             char_kinds = ois.readInt();
-    
+
             if (char_kinds == 1) {
-                byte code_temp = ois.readByte();
+                code_temp = ois.readByte();
                 file_len = ois.readInt();
-                while (file_len-- != 0) {
-                    baos.write(code_temp);
+                while ((file_len--) != 0) {
+                    fos.write(code_temp);
                 }
             } else {
-                // Create Huffman tree for decompression
                 node_num = 2 * char_kinds - 1;
                 huf_tree = new HuffmanTree[node_num];
                 for (i = 0; i < char_kinds; ++i) {
@@ -190,9 +234,8 @@ public class Utility {
                 createTree(huf_tree, char_kinds, node_num, queue);
                 file_len = ois.readInt();
                 root = node_num - 1;
-    
                 while (true) {
-                    byte code_temp = ois.readByte(); //error here
+                    code_temp = ois.readByte();
                     for (i = 0; i < 8; ++i) {
                         if ((code_temp & 128) == 128) {
                             root = huf_tree[root].rchild;
@@ -200,7 +243,7 @@ public class Utility {
                             root = huf_tree[root].lchild;
                         }
                         if (root < char_kinds) {
-                            baos.write(huf_tree[root].bit);
+                            fos.write(huf_tree[root].bit);
                             ++writen_len;
                             if (writen_len == file_len)
                                 break;
@@ -212,42 +255,37 @@ public class Utility {
                         break;
                 }
             }
-    
-            ois.close();
             fis.close();
+            fos.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-    
-        // Convert the ByteArrayOutputStream to an array of pixel data
-        int[][][] pixels = new int[file_len / 3][1][3]; //error here
-        int pixelIndex = 0;
-        byte[] byteArray = baos.toByteArray();
-    
-        for (byte code_temp : byteArray) {
-            int temp_root = node_num - 1;
-            for (int j = 7; j >= 0; j--) {
-                if ((code_temp & (1 << j)) != 0) {
-                    temp_root = huf_tree[temp_root].rchild;
-                } else {
-                    temp_root = huf_tree[temp_root].lchild;
-                }
-                if (temp_root < char_kinds) {
-                    pixels[pixelIndex][0][0] = huf_tree[temp_root].bit;
-                    temp_root = node_num - 1;
-                } else if (temp_root < 2 * char_kinds) {
-                    pixels[pixelIndex][0][1] = huf_tree[temp_root].bit;
-                    temp_root = node_num - 1;
-                } else if (temp_root < 3 * char_kinds) {
-                    pixels[pixelIndex][0][2] = huf_tree[temp_root].bit;
-                    pixelIndex++;
-                    temp_root = node_num - 1;
-                }
+        byte[] pixelData1D;
+        try (FileInputStream fisd = new FileInputStream(outputFile)) {
+            pixelData1D = fisd.readAllBytes();
+        }
+
+        // Retrieve the width and height from the beginning of the array
+        ByteBuffer buffer = ByteBuffer.wrap(pixelData1D);
+        int width = buffer.getInt();
+        int height = buffer.getInt();
+
+        // Convert the 1D array back into a 3D array
+        int[][][] result = new int[width][height][3];
+        int index = 8; // Start after the width and height
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                result[x][y][0] = pixelData1D[index++]; // Red
+                result[x][y][1] = pixelData1D[index++]; // Green
+                result[x][y][2] = pixelData1D[index++]; // Blue
             }
         }
-        return pixels;
+
+        // Delete the decompressed file
+        outputFile.delete();
+        return result;
     }
-    
 
     public void createTree(HuffmanTree[] huf_tree, int char_kinds, int node_num, PriorityQueue<HuffmanTree> queue) {
         int i;

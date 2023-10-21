@@ -16,24 +16,11 @@ import utility_huffman.*;
 // =================================================
 
 public class App {
-    
-    public static void Compress(int[][][] pixels, String outputFileName) throws IOException {
-
-        // Create an instance of HuffmanCompress and use it to compress the data
-        HuffmanCompress huffman = new HuffmanCompress();
-        huffman.compress(pixels, new File(outputFileName));
-    }
-
-    public static int[][][] Decompress(String inputFileName) throws IOException, ClassNotFoundException {
-        // Create an instance of HuffmanCompress and use it to decompress the data
-        HuffmanCompress huffman = new HuffmanCompress();
-        return huffman.decompress(inputFileName);
-    }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException{
 
         //Create an instance of Utility
-        // Utility Utility = new Utility();
+        Utility Utility = new Utility();
 
         //Define original file directory to loop through
         String ImageDirectory = "../Original/";
@@ -75,7 +62,7 @@ public class App {
                     
                     //call compress function
                     // Utility.
-                    Compress(pixelData, compressed_file_name);
+                    Utility.Compress(pixelData, compressed_file_name);
                     
                     //end timer for compress and record the total time passed
                     long compressEndTime = System.currentTimeMillis();
@@ -101,7 +88,7 @@ public class App {
 
                     // call decompress function
                     // int [][][] newPixelData = Utility.Decompress(compressed_file_name);
-                    int [][][] newPixelData = Decompress(compressed_file_name);
+                    int [][][] newPixelData = Utility.Decompress(compressed_file_name);
                     
                     //end timer for decompress and record the total time passed
                     long decompressEndTime = System.currentTimeMillis();
