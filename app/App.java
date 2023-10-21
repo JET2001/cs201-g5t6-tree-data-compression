@@ -18,71 +18,16 @@ import utility_huffman.*;
 public class App {
     
     public static void Compress(int[][][] pixels, String outputFileName) throws IOException {
-                        // Convert the 3D array into a 1D array
-        int width = pixels.length;
-        int height = pixels[0].length;
-        byte[] pixelData1D = new byte[width * height * 3 + 8]; // Add 8 bytes for width and height
-
-        // Store the width and height at the beginning of the array
-        ByteBuffer buffer = ByteBuffer.wrap(pixelData1D);
-        buffer.putInt(width);
-        buffer.putInt(height);
-
-        int index = 8; // Start after the width and height
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                pixelData1D[index++] = (byte) pixels[x][y][0]; // Red
-                pixelData1D[index++] = (byte) pixels[x][y][1]; // Green
-                pixelData1D[index++] = (byte) pixels[x][y][2]; // Blue
-            }
-        }
-
-        // Create a temporary file to store the pixel data
-        File tempFile = File.createTempFile("temp", null);
-        try (FileOutputStream fos = new FileOutputStream(tempFile)) { 
-            fos.write(pixelData1D);
-        }
 
         // Create an instance of HuffmanCompress and use it to compress the data
         HuffmanCompress huffman = new HuffmanCompress();
-        huffman.compress(tempFile, new File(outputFileName));
-
-        // Delete the temporary file
-        tempFile.delete();
+        huffman.compress(pixels, new File(outputFileName));
     }
 
     public static int[][][] Decompress(String inputFileName) throws IOException, ClassNotFoundException {
         // Create an instance of HuffmanCompress and use it to decompress the data
         HuffmanCompress huffman = new HuffmanCompress();
-        File decompressedFile = new File(inputFileName + ".decompressed");
-        huffman.decompress(new File(inputFileName), decompressedFile);
-
-        // Read the decompressed data into a 1D array of bytes
-        byte[] pixelData1D;
-        try (FileInputStream fis = new FileInputStream(decompressedFile)) {
-            pixelData1D = fis.readAllBytes();
-        }
-
-        // Retrieve the width and height from the beginning of the array
-        ByteBuffer buffer = ByteBuffer.wrap(pixelData1D);
-        int width = buffer.getInt();
-        int height = buffer.getInt();
-
-        // Convert the 1D array back into a 3D array
-        int[][][] result = new int[width][height][3];
-        int index = 8; // Start after the width and height
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                result[x][y][0] = pixelData1D[index++]; // Red
-                result[x][y][1] = pixelData1D[index++]; // Green
-                result[x][y][2] = pixelData1D[index++]; // Blue
-            }
-        }
-
-        // Delete the decompressed file
-        decompressedFile.delete();
-
-        return result;
+        return huffman.decompress(inputFileName);
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException{
