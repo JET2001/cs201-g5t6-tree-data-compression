@@ -1,4 +1,4 @@
-package utility.text;
+package misc.text;
 
 public class Client {
     public static void main(String[] args) {

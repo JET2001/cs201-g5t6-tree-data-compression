@@ -1,4 +1,4 @@
-package utility.text;
+package misc.text;
 
 import java.util.HashMap;
 import java.util.Map;
