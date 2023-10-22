@@ -1,35 +1,29 @@
 package app;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.awt.image.BufferedImage;
-
+import java.io.File;
+import java.io.IOException;
 import javax.imageio.ImageIO;
 
-// ====== Import the correct utility file here =====
-// import utility_sample.*;
-import utility_huffman.*;
-// import basic_huffman.Utility;
-
-// =================================================
+import utility_huffman.Utility;
 
 public class App {
-
     public static void main(String[] args) throws IOException, ClassNotFoundException{
 
         //Create an instance of Utility
         Utility Utility = new Utility();
 
         //Define original file directory to loop through
-        String ImageDirectory = "../Original/";
+        String ImageDirectory = "Original/";
+
         // List all files in the directory
         File directory = new File(ImageDirectory);
         File[] files = directory.listFiles();
 
         if (files != null) {
-            System.out.println("hello");
             for (File file : files) {
                 if (file.isFile()) {
                     String imageName = file.getName();
@@ -55,13 +49,12 @@ public class App {
                     // Now you have the image data in 'pixelData' that will be taken in by Compress
 
                     // Define location and name for the compressed file to be created
-                    String compressed_file_name = "../Compressed/" + imageName.substring(0, imageName.lastIndexOf('.')) + ".bin";
+                    String compressed_file_name = "Compressed/" + imageName.substring(0, imageName.lastIndexOf('.')) + ".bin";
 
                     // start compress timer
                     long compressStartTime = System.currentTimeMillis();
                     
                     //call compress function
-                    // Utility.
                     Utility.Compress(pixelData, compressed_file_name);
                     
                     //end timer for compress and record the total time passed
@@ -87,7 +80,6 @@ public class App {
                     long decompressStartTime = System.currentTimeMillis();
 
                     // call decompress function
-                    // int [][][] newPixelData = Utility.Decompress(compressed_file_name);
                     int [][][] newPixelData = Utility.Decompress(compressed_file_name);
                     
                     //end timer for decompress and record the total time passed
@@ -98,11 +90,11 @@ public class App {
 
                     //convert back to image for visualisation
                     PixeltoImageConverter PixeltoImageConverter = new PixeltoImageConverter(newPixelData);
-                    PixeltoImageConverter.saveImage("../Decompressed/" + imageName, "png");
+                    PixeltoImageConverter.saveImage("Decompressed/" + imageName, "png");
 
                     //Get the two bufferedimages for calculations
                     BufferedImage originalimage = ImageIO.read(new File(ImageDirectory + imageName));
-                    BufferedImage decompressedimage = ImageIO.read(new File("../Decompressed/" + imageName)); 
+                    BufferedImage decompressedimage = ImageIO.read(new File("Decompressed/" + imageName)); 
 
                     //calculate MAE
                     double MAE = MAECalculator.calculateMAE(originalimage, decompressedimage);

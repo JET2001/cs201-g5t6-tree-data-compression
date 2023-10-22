@@ -1,8 +1,8 @@
 package utility_huffman;
 
-import java.util.*;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.*;
 
 public class Utility {
     class HuffmanTree {
@@ -184,37 +184,34 @@ public class Utility {
             e.printStackTrace();
         }
     }
-
+    
     public int[][][] Decompress(String inputFileName) throws IOException, ClassNotFoundException {
         Compare comp = new Compare();
-        queue = new PriorityQueue<HuffmanTree>(12, comp);
+        PriorityQueue<HuffmanTree> queue = new PriorityQueue<HuffmanTree>(12, comp);
         int i;
         int file_len = 0;
         int writen_len = 0;
-        FileInputStream fis = null;
-        FileOutputStream fos = null;
-        ObjectInputStream ois = null;
-
         int char_kinds = 0;
         int node_num;
         HuffmanTree[] huf_tree = null;
         byte code_temp;
         int root;
-
-        File inputFile = new File(inputFileName);
-        File outputFile = new File(inputFile + ".decompressed");
-        try {
-            fis = new FileInputStream(inputFile);
-            ois = new ObjectInputStream(fis);
-            fos = new FileOutputStream(outputFile);
-
+    
+        byte[] pixelData1D = null; // Initialize the pixelData1D
+    
+        try (FileInputStream fis = new FileInputStream(inputFileName);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+    
             char_kinds = ois.readInt();
-
+    
             if (char_kinds == 1) {
                 code_temp = ois.readByte();
                 file_len = ois.readInt();
+    
+                pixelData1D = new byte[file_len];
+    
                 while ((file_len--) != 0) {
-                    fos.write(code_temp);
+                    pixelData1D[writen_len++] = code_temp;
                 }
             } else {
                 node_num = 2 * char_kinds - 1;
@@ -234,7 +231,10 @@ public class Utility {
                 createTree(huf_tree, char_kinds, node_num, queue);
                 file_len = ois.readInt();
                 root = node_num - 1;
-                while (true) {
+    
+                pixelData1D = new byte[file_len];
+    
+                while (writen_len < file_len) {
                     code_temp = ois.readByte();
                     for (i = 0; i < 8; ++i) {
                         if ((code_temp & 128) == 128) {
@@ -243,34 +243,22 @@ public class Utility {
                             root = huf_tree[root].lchild;
                         }
                         if (root < char_kinds) {
-                            fos.write(huf_tree[root].bit);
-                            ++writen_len;
-                            if (writen_len == file_len)
-                                break;
+                            pixelData1D[writen_len++] = huf_tree[root].bit;
                             root = node_num - 1;
                         }
                         code_temp <<= 1;
                     }
-                    if (writen_len == file_len)
-                        break;
                 }
             }
-            fis.close();
-            fos.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-        byte[] pixelData1D;
-        try (FileInputStream fisd = new FileInputStream(outputFile)) {
-            pixelData1D = fisd.readAllBytes();
-        }
-
+    
         // Retrieve the width and height from the beginning of the array
         ByteBuffer buffer = ByteBuffer.wrap(pixelData1D);
         int width = buffer.getInt();
         int height = buffer.getInt();
-
+    
         // Convert the 1D array back into a 3D array
         int[][][] result = new int[width][height][3];
         int index = 8; // Start after the width and height
@@ -281,13 +269,12 @@ public class Utility {
                 result[x][y][2] = pixelData1D[index++]; // Blue
             }
         }
-
-        // Delete the decompressed file
-        outputFile.delete();
+    
         return result;
     }
+    
 
-    public void createTree(HuffmanTree[] huf_tree, int char_kinds, int node_num, PriorityQueue<HuffmanTree> queue) {
+    private void createTree(HuffmanTree[] huf_tree, int char_kinds, int node_num, PriorityQueue<HuffmanTree> queue) {
         int i;
         int[] arr = new int[2];
         for (i = char_kinds; i < node_num; ++i) {
@@ -302,7 +289,7 @@ public class Utility {
         }
     }
 
-    public void hufCode(HuffmanTree[] huf_tree, int char_kinds) {
+    private void hufCode(HuffmanTree[] huf_tree, int char_kinds) {
         int i;
         int cur, next;
         for (i = 0; i < char_kinds; ++i) {
