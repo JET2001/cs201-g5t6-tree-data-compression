@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-import utility_huffman.Utility;
+import utility_basic.Utility;
 
 public class App {
     public static void main(String[] args) throws IOException, ClassNotFoundException{
@@ -114,6 +114,3 @@ public class App {
 
     }
 }
-
-
-        
