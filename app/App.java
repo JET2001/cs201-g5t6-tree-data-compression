@@ -8,10 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-// ====== Import the correct utility file here =====
-import utility.*;
-
-// =================================================
+import utility_basic.Utility;
 
 public class App {
     public static void main(String[] args) throws IOException, ClassNotFoundException{
@@ -20,7 +17,7 @@ public class App {
         Utility Utility = new Utility();
 
         //Define original file directory to loop through
-        String ImageDirectory = "../Original/";
+        String ImageDirectory = "Original/";
 
         // List all files in the directory
         File directory = new File(ImageDirectory);
@@ -52,7 +49,7 @@ public class App {
                     // Now you have the image data in 'pixelData' that will be taken in by Compress
 
                     // Define location and name for the compressed file to be created
-                    String compressed_file_name = "../Compressed/" + imageName.substring(0, imageName.lastIndexOf('.')) + ".bin";
+                    String compressed_file_name = "Compressed/" + imageName.substring(0, imageName.lastIndexOf('.')) + ".bin";
 
                     // start compress timer
                     long compressStartTime = System.currentTimeMillis();
@@ -93,11 +90,11 @@ public class App {
 
                     //convert back to image for visualisation
                     PixeltoImageConverter PixeltoImageConverter = new PixeltoImageConverter(newPixelData);
-                    PixeltoImageConverter.saveImage("../Decompressed/" + imageName, "png");
+                    PixeltoImageConverter.saveImage("Decompressed/" + imageName, "png");
 
                     //Get the two bufferedimages for calculations
                     BufferedImage originalimage = ImageIO.read(new File(ImageDirectory + imageName));
-                    BufferedImage decompressedimage = ImageIO.read(new File("../Decompressed/" + imageName)); 
+                    BufferedImage decompressedimage = ImageIO.read(new File("Decompressed/" + imageName)); 
 
                     //calculate MAE
                     double MAE = MAECalculator.calculateMAE(originalimage, decompressedimage);
@@ -117,6 +114,3 @@ public class App {
 
     }
 }
-
-
-        

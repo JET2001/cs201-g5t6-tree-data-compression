@@ -1,4 +1,4 @@
-package utility;
+package utility_sample;
 
 import java.io.*;
 
