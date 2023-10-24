@@ -18,6 +18,11 @@ In the main directory, run
 ```
 MAC commands may be slightly different. If you are on MAC and this doesn't work, please add the mac version as well.
 
+Note that upon successful running of the programme, you should see this:
+![image](https://github.com/JET2001/cs201-g5t6-tree-data-compression/assets/91585955/fd0e5a6e-352b-468f-92bb-87da43ec22a9)
+
+for all 7 images.
+
 ## Image files
 Place the images in the root directory (NOT inside the `app/` directory). The paths to the folders have been modified in the package app (they have been prefixed with a `../` from the original code given.)
 
