@@ -4,6 +4,14 @@ CS201 G5T6 Tree Data Compression
 ## Run the Project
 To run the project, add your implementation of Utility in a different java package **and modify the import in `App.java`**. 
 
+Go to `App.java` between lines 10-20:
+```
+// ========== ADD YOUR UTILITY IMPLEMENTATION HERE ====
+import <YOUR_PACKAGE_NAME>.Utility;
+<Comment out other imports>
+// ====================================================
+```
+
 In the main directory, run 
 ```
 .\compile-and-run.bat
