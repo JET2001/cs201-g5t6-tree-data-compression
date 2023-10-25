@@ -129,10 +129,30 @@ public class Utility {
         }
     }
 
+    final int numberOfColors = 52; // range from 2 - 256 (52 is the sweet spot)
+
+    public int[][][] quantize(int[][][] imagePixels, int numberOfColors) {
+        int binSize = (int)Math.ceil(256 / numberOfColors);
+        for (int x = 0; x < imagePixels.length; x++) {
+            for (int y = 0; y < imagePixels[0].length; y++) {
+                for (int z = 0; z < imagePixels[0][0].length; z++) {
+                    int color = imagePixels[x][y][z];
+                    int binIndex = color / binSize;
+                    int quantizedColor = binSize * binIndex + binSize / 2;
+                    imagePixels[x][y][z] = quantizedColor;
+                }
+            }
+        }
+        return imagePixels;
+    }
+
     // Method to compress image data and save it to a file
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
+        //Quantize the image data
+        int[][][] quantizedImagePixels = quantize(imagePixels, numberOfColors);
+
         // Calculate color frequencies in the image
-        Map<Integer, Integer> colorFrequencies = calculateColorFrequencies(imagePixels);
+        Map<Integer, Integer> colorFrequencies = calculateColorFrequencies(quantizedImagePixels);
 
         // Build Huffman tree based on color frequencies
         HuffmanTree huffmanTree = buildHuffmanTree(imagePixels, colorFrequencies);
@@ -244,14 +264,17 @@ public class Utility {
                 for (int z = 0; z < colorDepth; z++) {
                     currentNode = huffmanTree.getRoot();
                     while (true) {
+                        if (currentBit >= compressedDataBytes.length * 8) {
+                            break;
+                        }
                         if (currentBit % 8 == 0) {
                             currentByte = compressedDataBytes[currentBit >> 3];
                         }
                         int bit = (currentByte >> (7 - (currentBit % 8))) & 1;
                         currentBit++;
-
+        
                         currentNode = (bit == 0) ? currentNode.getLeft() : currentNode.getRight();
-
+        
                         if (currentNode.hasLeaf()) {
                             imagePixels[x][y][z] = currentNode.getColor();
                             break;
@@ -260,7 +283,6 @@ public class Utility {
                 }
             }
         }
-
         return imagePixels;
     }
 
