@@ -51,6 +51,7 @@ public class App {
                     // Now you have the image data in 'pixelData' that will be taken in by Compress
 
                     // Define location and name for the compressed file to be created
+
                     String compressed_file_name = "../Compressed/" + imageName.substring(0, imageName.lastIndexOf('.')) + ".bin";
 
                     // start compress timer
