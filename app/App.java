@@ -96,7 +96,7 @@ public class App {
 
                     //Get the two bufferedimages for calculations
                     BufferedImage originalimage = ImageIO.read(new File(ImageDirectory + imageName));
-                    BufferedImage decompressedimage = ImageIO.read(new File("Decompressed/" + imageName)); 
+                    BufferedImage decompressedimage = ImageIO.read(new File("../Decompressed/" + imageName)); 
 
                     //calculate MAE
                     double MAE = MAECalculator.calculateMAE(originalimage, decompressedimage);

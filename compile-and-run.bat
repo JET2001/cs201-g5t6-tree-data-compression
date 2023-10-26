@@ -1,5 +1,5 @@
 @echo off
-del /Q /F /S "./compiled/*"
+del /Q /F /S "compiled"
 javac -d compiled -sourcepath . "app/App.java"
 
 if %errorlevel% equ 0 (
