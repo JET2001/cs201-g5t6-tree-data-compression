@@ -264,7 +264,7 @@ public class Utility {
     // Method to compress image data and save it to a file
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
         // Quantize the image data
-        int[][][] quantizedImagePixels = quantization(imagePixels, numberOfColors/6);
+        int[][][] quantizedImagePixels = quantization(imagePixels, numberOfColors / 6);
         quantizedImagePixels = octreeQuantization(imagePixels, numberOfColors * 18);
 
         // Calculate color frequencies in the image
@@ -315,7 +315,7 @@ public class Utility {
     // Convert a binary string to bytes
     public static byte[] convertBinaryStringToBytes(final String binaryString) {
         int binaryStringLength = binaryString.length();
-        int byteCount = (binaryStringLength + 6) / 8;
+        int byteCount = (binaryStringLength + 7) / 8;
         byte[] bytes = new byte[byteCount];
 
         for (int i = 0; i < byteCount; i++) {
@@ -372,7 +372,6 @@ public class Utility {
     private int[][][] reconstructImagePixels(HuffmanTree huffmanTree, byte[] compressedDataBytes) {
         int currentBit = 0;
         HuffmanNode currentNode = huffmanTree.getRoot();
-        int currentByte = compressedDataBytes[currentBit >> 3];
 
         int imageWidth = huffmanTree.getImageWidth();
         int imageHeight = huffmanTree.getImageHeight();
@@ -387,9 +386,7 @@ public class Utility {
                         if (currentBit >= compressedDataBytes.length * 8) {
                             break;
                         }
-                        if (currentBit % 8 == 0) {
-                            currentByte = compressedDataBytes[currentBit >> 3];
-                        }
+                        int currentByte = compressedDataBytes[currentBit >> 3];
                         int bit = (currentByte >> (7 - (currentBit % 8))) & 1;
                         currentBit++;
 
