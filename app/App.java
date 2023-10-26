@@ -9,7 +9,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 // ========== ADD YOUR UTILITY IMPLEMENTATION HERE ====
-import utility_basic.Utility;
+// import utility_basic.Utility;
+import utility_quadtrees.Utility;
 // ====================================================
 
 public class App {
@@ -39,6 +40,8 @@ public class App {
                     int[][][] pixelData = ImagetoPixelConverter.getPixelData();
                     int width = ImagetoPixelConverter.getWidth();
                     int height = ImagetoPixelConverter.getHeight();
+                    System.out.println("width = "+ width);
+                    System.out.println("height = " + height);
 
                     for (int x = 0; x < width; x++) {
                         for (int y = 0; y < height; y++) {
