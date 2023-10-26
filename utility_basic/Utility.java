@@ -208,7 +208,7 @@ public class Utility {
             for (int y = 0; y < imagePixels[0].length; y++) {
                 int[] color = octree.findColor(imagePixels[x][y][0], imagePixels[x][y][1],
                         imagePixels[x][y][2]);
-                imagePixels[x][y]= color;
+                imagePixels[x][y] = color;
             }
         }
 
@@ -245,19 +245,20 @@ public class Utility {
         return ditheredImagePixels;
     }
 
+    // uniform quantization
     public int[][][] quantization(int[][][] imagePixels, int numberOfColors) {
-    int binSize = (int) Math.ceil(256 / numberOfColors);
-    for (int x = 0; x < imagePixels.length; x++) {
-    for (int y = 0; y < imagePixels[0].length; y++) {
-    for (int z = 0; z < imagePixels[0][0].length; z++) {
-    int color = imagePixels[x][y][z];
-    int binIndex = color / binSize;
-    int quantizedColor = binSize * binIndex + binSize / 2;
-    imagePixels[x][y][z] = quantizedColor;
-    }
-    }
-    }
-    return imagePixels;
+        int binSize = (int) Math.ceil(256 / numberOfColors);
+        for (int x = 0; x < imagePixels.length; x++) {
+            for (int y = 0; y < imagePixels[0].length; y++) {
+                for (int z = 0; z < imagePixels[0][0].length; z++) {
+                    int color = imagePixels[x][y][z];
+                    int binIndex = color / binSize;
+                    int quantizedColor = binSize * binIndex + binSize / 2;
+                    imagePixels[x][y][z] = quantizedColor;
+                }
+            }
+        }
+        return imagePixels;
     }
 
     // Method to compress image data and save it to a file
@@ -307,7 +308,7 @@ public class Utility {
 
             // Dequantize the image pixels
             return quantization(quantizedImagePixels, numberOfColors);
-            // return quantizedImagePixels;
+            //return quantizedImagePixels;
         }
     }
 
