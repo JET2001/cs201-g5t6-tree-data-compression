@@ -3,6 +3,10 @@ package utility_quadtrees;
 import java.io.*;
 import java.util.*;
 
+interface QuadTreeConstants {
+    int RMSE_THRESHOLD = 20;
+}
+
 public class Utility {
     class OctreeNode {
         int pixelCount;
@@ -179,16 +183,22 @@ public class Utility {
 
 /**
  * In the end, we want to save a tree of quadrant objects, 
- * which should be as
- * small as possible.
+ * which should be as small as possible.
  * Leaving all the utility for quadtrees outside this class.
+ * Getters and setters might take up space, so I declared all 
+ * variables as package-private.
+ * Might possibly reduce the size of the object. 
  */
 class Quadrant implements Serializable {
-    // Bounds (all inclusive)
-    short topLeftX, topLeftY, lowerRightX, lowerRightY;
+    // Top left indices of box
+    short topLeftX, topLeftY;
+    // Bottom right indices of box
+    short lowerRightX, lowerRightY;
 
     // Children
     Quadrant[] children = null;
+
+    // Average colours
     short avgRed, avgGreen, avgBlue;
 
     public Quadrant(short tlX, short tlY, short lrX, short lrY, int[][][] pixels) {
@@ -235,7 +245,6 @@ class ImageUtils {
  * All QuadTreeImplementation from this class
  */
 class QuadTreeUtils {
-    private static final short THRESHOLD = 20;
 
     private QuadTreeUtils() {
     }
@@ -270,9 +279,12 @@ class QuadTreeUtils {
     public static boolean errorAboveThreshold(Quadrant quad, Quadrant subQuad){
         short[] avgRGBQuad = {quad.avgRed, quad.avgGreen, quad.avgBlue};
         short[] avgRGBSub = {subQuad.avgRed, subQuad.avgGreen, subQuad.avgBlue};
-        return RGBErrorUtils.computeRMSE(avgRGBQuad, avgRGBSub) > THRESHOLD;
+        return RGBErrorUtils.computeRMSE(avgRGBQuad, avgRGBSub) > QuadTreeConstants.RMSE_THRESHOLD;
     }
 
+    /*
+     * Given a quadrant, return an array of subquadrants
+     */
     public static Quadrant[] getSubQuadrants(Quadrant quad, int[][][] pixels){
         // Check if there are enough rows / columns before we make a quadrant
         if(QuadTreeUtils.countPixelsInCol(quad) <= 2 || QuadTreeUtils.countPixelsInRow(quad) <= 2) return new Quadrant[0];
@@ -290,12 +302,21 @@ class QuadTreeUtils {
         return new Quadrant[]{topLeft, topRight, bottomLeft, bottomRight};
     }
 
+    /*
+     * Given a quadrant, find the middle point, or the point 
+     * slightly to the left and above the middle point. This
+     * is necessary for images which are non-square.
+     */
     public static short[] getMiddle(Quadrant quad){
         short middleX = (short)((quad.topLeftX + quad.lowerRightX) / 2);
         short middleY = (short)((quad.topLeftY + quad.lowerRightY) / 2);
         return new short[]{middleX, middleY};
     }
-
+    /*
+     * The below two methods count the number of pixels in
+     * a region, row and column. These take in
+     * different arguments.
+     */
     public static int countOfPixelsInRegion(short tlX, short tlY, short lrX, short lrY){
         return (lrX - tlX + 1) * (lrY - tlY + 1);
     }
@@ -311,7 +332,10 @@ class QuadTreeUtils {
     public static int countPixelsInCol(Quadrant quad){
        return (quad.lowerRightY - quad.topLeftY + 1); 
     }
-
+    /*
+     * This is used for the restoration of images, in the
+     * Decompress method.
+     */
     public static void restoreImage(Quadrant quad, int[][][] pixels){
         if (quad == null) return;
         int width = countPixelsInRow(quad), height = countPixelsInCol(quad);
@@ -338,8 +362,19 @@ class QuadTreeUtils {
     }
 }
 
+/*
+ * This class implements various error metrics that
+ * can be used for QuadTree threshold.
+ */
 class RGBErrorUtils {
     private RGBErrorUtils(){}
+    /*
+     * This computes the RMSE between the avg colours 
+     * defined in rgb1 and rgb2.
+     * Arrays should be of same size and have a length of 3:
+     * with index 0 = avgRed, index 1 = avgGreen, index 2 =
+     * avgBlue.
+     */
     public static double computeRMSE(short[] rgb1, short[] rgb2){
         double error = 0.0;
         for (int i = 0; i < rgb1.length; ++i) error += Math.pow((rgb1[i] - rgb2[i]),2);
