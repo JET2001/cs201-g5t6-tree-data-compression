@@ -3,10 +3,6 @@ package utility_quadtrees;
 import java.io.*;
 import java.util.*;
 
-interface Constants {
-    int RGB_ERROR_THRESHOLD = 20;
-}
-
 public class Utility {
 
     public void Compress(int[][][] pixels, String outputFileName) throws IOException {
@@ -58,16 +54,11 @@ public class Utility {
  * Leaving all the utility for quadtrees outside this class.
  */
 class Quadrant implements Serializable {
-    // Indices of the top left corner (all inclusive)
-    short topLeftX, topLeftY;
-    
-    // Indices of the top right corner (all inclusive)
-    short lowerRightX, lowerRightY;
+    // Bounds (all inclusive)
+    short topLeftX, topLeftY, lowerRightX, lowerRightY;
 
     // Children
     Quadrant[] children = null;
-
-    // Average colours for quadrant
     short avgRed, avgGreen, avgBlue;
 
     public Quadrant(short tlX, short tlY, short lrX, short lrY, int[][][] pixels) {
@@ -83,11 +74,10 @@ class Quadrant implements Serializable {
     }
 
     public String toString() {
-        // return "Quadrant [TopLeft(x,y) = (" + topLeftX + ", " + topLeftY + "), BottomRight(x,y) = (" + lowerRightX
-        //         + ", " + lowerRightY
-        //         + ", children = " + Arrays.toString(children) + ", avgRGB= [" + avgRed + ", " + avgGreen + ", "
-        //         + avgBlue + "] ]";
-        return "Quadrant [TopLeft(x,y) = ("+ topLeftX +", "+ topLeftY+"), BottomRight(x,y) = ("+ lowerRightX + ", " + lowerRightY +")]";
+        return "Quadrant [TopLeft(x,y) = (" + topLeftX + ", " + topLeftY + "), BottomRight(x,y) = (" + lowerRightX
+                + ", " + lowerRightY
+                + ", children = " + Arrays.toString(children) + ", avgRGB= [" + avgRed + ", " + avgGreen + ", "
+                + avgBlue + "] ]";
     }
 }
 
@@ -107,7 +97,7 @@ class ImageUtils {
         }
         int totalPixelsInRegion = QuadTreeUtils.countOfPixelsInRegion(tlX, tlY, lrX, lrY);
         return new short[] { (short) (totalRed / totalPixelsInRegion), (short) (totalGreen / totalPixelsInRegion),
-                (short) (totalBlue / totalPixelsInRegion) }; // short[3]{avgRed, avgGreen, avgBlue}
+                (short) (totalBlue / totalPixelsInRegion) };
     }
 }
 
@@ -115,7 +105,7 @@ class ImageUtils {
  * All QuadTreeImplementation from this class
  */
 class QuadTreeUtils {
-    // private static final short THRESHOLD = 20;
+    private static final short THRESHOLD = 20;
 
     private QuadTreeUtils() {
     }
@@ -150,7 +140,7 @@ class QuadTreeUtils {
     public static boolean errorAboveThreshold(Quadrant quad, Quadrant subQuad){
         short[] avgRGBQuad = {quad.avgRed, quad.avgGreen, quad.avgBlue};
         short[] avgRGBSub = {subQuad.avgRed, subQuad.avgGreen, subQuad.avgBlue};
-        return RGBErrorUtils.computeRMSE(avgRGBQuad, avgRGBSub) > Constants.RGB_ERROR_THRESHOLD;
+        return RGBErrorUtils.computeRMSE(avgRGBQuad, avgRGBSub) > THRESHOLD;
     }
 
     public static Quadrant[] getSubQuadrants(Quadrant quad, int[][][] pixels){
@@ -167,27 +157,7 @@ class QuadTreeUtils {
 
         Quadrant bottomRight = new Quadrant(middlePoint[0], middlePoint[1], quad.lowerRightX, quad.lowerRightY, pixels);
         
-        Quadrant[] subQuadrants = new Quadrant[]{topLeft, topRight, bottomLeft, bottomRight};
-
-        // Check if any quadrant overflow the bounds of the parent boundary
-        for (Quadrant subQuad: subQuadrants){
-            if (!withinBoundary(quad, subQuad)) return new Quadrant[0];
-        }
-        return subQuadrants;
-    }
-
-    /*
-     * Checks if the quadrant "inner" is within the quadrant "outer"
-     */
-    public static boolean withinBoundary(Quadrant outer, Quadrant inner){
-        System.out.println("outer = " + outer);
-        System.out.println("inner = " + inner);
-        boolean withinBound = !((inner.topLeftX < outer.topLeftX) || (inner.lowerRightX > outer.lowerRightX) || (inner.topLeftY < outer.topLeftY) || (inner.lowerRightY > outer.lowerRightY));
-
-        System.out.println("within boundary = " + withinBound);
-        return withinBound;
-
-        // return !((inner.topLeftX < outer.topLeftX) || (inner.lowerRightX > outer.lowerRightX) || (inner.topLeftY < outer.topLeftY) || (inner.lowerRightY > outer.lowerRightY)); 
+        return new Quadrant[]{topLeft, topRight, bottomLeft, bottomRight};
     }
 
     public static short[] getMiddle(Quadrant quad){
