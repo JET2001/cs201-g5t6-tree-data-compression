@@ -10,8 +10,8 @@ import javax.imageio.ImageIO;
 
 // ========== ADD YOUR UTILITY IMPLEMENTATION HERE ====
 // import utility_basic.Utility;
-// import utility_quadtrees.Utility;
-import utility_quantised_quadtrees.Utility;
+import utility_quadtrees.Utility;
+// import utility_quantised_quadtrees.Utility;
 // ====================================================
 
 public class App {
@@ -26,6 +26,14 @@ public class App {
         // List all files in the directory
         File directory = new File(ImageDirectory);
         File[] files = directory.listFiles();
+
+        // Store files in a list to get average
+        List<Long> compressTimes = new ArrayList<>();
+        List<Long> bytesSaved = new ArrayList<>();
+        List<Long> decompressTimes = new ArrayList<>();
+        List<Double> maeValues = new ArrayList<>();
+        List<Double> mseValues = new ArrayList<>();
+        List<Double> psnrValues = new ArrayList<>();
 
         if (files != null) {
             for (File file : files) {
@@ -115,9 +123,40 @@ public class App {
                     double PSNR = PSNRCalculator.calculatePSNR(originalimage, decompressedimage);
                     System.out.println("PSNR of :" + imageName + " is " + PSNR);
                     System.out.println("----------------------------------------------------------------------------");   
-
+                    // Update array
+                    compressTimes.add(compressExecutionTime);
+                    bytesSaved.add(differenceInFileSize);
+                    decompressTimes.add(decompressExecutionTime);
+                    maeValues.add(MAE);
+                    mseValues.add(MSE);
+                    psnrValues.add(PSNR);
                 }
             }
+            System.out.println("=============== AGGREGATED RESULTS FOR ALGO =====================");
+            System.out.println("Min Execution Time = " + compressTimes.stream().mapToDouble(num -> num).min().getAsDouble());
+            System.out.println("Average Execution Time = " + compressTimes.stream().mapToDouble(num -> num).average().getAsDouble());
+            System.out.println("Max Execution Time = " + compressTimes.stream().mapToDouble(num -> num).max().getAsDouble());
+            System.out.println("----------------------------------------------------------------------------"); 
+            System.out.println("least bytes Saved = " + bytesSaved.stream().mapToDouble(num -> num).min().getAsDouble());
+            System.out.println("average bytes Saved = " + bytesSaved.stream().mapToDouble(num -> num).average().getAsDouble());
+            System.out.println("max bytes Saved = " + bytesSaved.stream().mapToDouble(num -> num).max().getAsDouble());
+            System.out.println("----------------------------------------------------------------------------"); 
+            System.out.println("Min Decompress Time = " + decompressTimes.stream().mapToDouble(num -> num).min().getAsDouble());
+            System.out.println("Average Decompress Time = " + decompressTimes.stream().mapToDouble(num -> num).average().getAsDouble());
+            System.out.println("Max Decompress Time = " + decompressTimes.stream().mapToDouble(num -> num).max().getAsDouble());
+            System.out.println("----------------------------------------------------------------------------"); 
+            System.out.println("Min MAE = " + maeValues.stream().mapToDouble(num -> num).min().getAsDouble());
+            System.out.println("Average MAE = " + maeValues.stream().mapToDouble(num -> num).average().getAsDouble());
+            System.out.println("Max MAE = " + maeValues.stream().mapToDouble(num -> num).max().getAsDouble());
+            System.out.println("----------------------------------------------------------------------------"); 
+            System.out.println("Min MSE = " + mseValues.stream().mapToDouble(num -> num).min().getAsDouble());
+            System.out.println("Average MSE = " + mseValues.stream().mapToDouble(num -> num).average().getAsDouble());
+            System.out.println("Max MSE = " + mseValues.stream().mapToDouble(num -> num).max().getAsDouble());
+            System.out.println("----------------------------------------------------------------------------"); 
+            System.out.println("Min PSNR = " + mseValues.stream().mapToDouble(num -> num).min().getAsDouble());
+            System.out.println("Average PSNR = " + mseValues.stream().mapToDouble(num -> num).average().getAsDouble());
+            System.out.println("Max PSNR = " + mseValues.stream().mapToDouble(num -> num).max().getAsDouble());
+            
         }
 
     }
