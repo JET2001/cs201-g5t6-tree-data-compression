@@ -188,8 +188,6 @@ public class Utility {
         }
     }
 
-    final int numberOfColors = 24; // range from 2 - 256 (24 is the sweet spot)
-
     public int[][][] octreeQuantization(int[][][] imagePixels, int numberOfColors) {
         // Create an Octree and add all colors from the image
         Octree octree = new Octree(numberOfColors);
@@ -261,11 +259,13 @@ public class Utility {
         return imagePixels;
     }
 
+    final int numberOfColors = 27; // range from 2 - 256 (24 is the sweet spot)
+
     // Method to compress image data and save it to a file
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
         // Quantize the image data
         int[][][] quantizedImagePixels = quantization(imagePixels, numberOfColors / 6);
-        quantizedImagePixels = octreeQuantization(imagePixels, numberOfColors * 18);
+        quantizedImagePixels = octreeQuantization(quantizedImagePixels, numberOfColors * 18);
 
         // Calculate color frequencies in the image
         Map<Integer, Integer> colorFrequencies = calculateColorFrequencies(quantizedImagePixels);
