@@ -4,6 +4,135 @@ import java.io.*;
 import java.util.*;
 
 public class Utility {
+    class OctreeNode {
+        int pixelCount;
+        int red;
+        int green;
+        int blue;
+        OctreeNode[] children;
+    }
+
+    class Octree {
+        OctreeNode root;
+        int numNodes;
+        int maxNodes;
+        List<List<OctreeNode>> levelBuckets;
+
+        public Octree(int maxNodes) {
+            root = new OctreeNode();
+            this.maxNodes = maxNodes;
+            levelBuckets = new ArrayList<>();
+            for (int i = 0; i <= 8; i++) {
+                levelBuckets.add(new ArrayList<>());
+            }
+        }
+
+        public void addColor(int red, int green, int blue) {
+            OctreeNode node = root;
+            for (int level = 1; level <= 8; level++) {
+                node.pixelCount++;
+                node.red += red;
+                node.green += green;
+                node.blue += blue;
+                int shift = 8 - level;
+                int index = ((red & (0x1 << shift)) > 0 ? 4 : 0) |
+                        ((green & (0x1 << shift)) > 0 ? 2 : 0) |
+                        ((blue & (0x1 << shift)) > 0 ? 1 : 0);
+                if (node.children == null) {
+                    node.children = new OctreeNode[8];
+                }
+                if (node.children[index] == null) {
+                    node.children[index] = new OctreeNode();
+                    numNodes++;
+                    levelBuckets.get(level).add(node.children[index]);
+                }
+                node = node.children[index];
+            }
+            node.pixelCount++;
+            node.red += red;
+            node.green += green;
+            node.blue += blue;
+        }
+
+        public void reduceTree() {
+            for (int level = 8; level >= 0; level--) {
+                if (levelBuckets.get(level).size() > 0) {
+                    OctreeNode node = levelBuckets.get(level).remove(0);
+                    node.pixelCount /= 8;
+                    node.red /= 8;
+                    node.green /= 8;
+                    node.blue /= 8;
+                    node.children = null;
+                    numNodes -= 7;
+                    if (numNodes <= maxNodes) {
+                        return;
+                    }
+                }
+            }
+        }
+
+        public int[] findColor(int red, int green, int blue) {
+            OctreeNode node = root;
+            for (int level = 1; level <= 8; level++) {
+                if (node.children == null) {
+                    break;
+                }
+                int shift = 8 - level;
+                int index = ((red & (0x1 << shift)) > 0 ? 4 : 0) |
+                        ((green & (0x1 << shift)) > 0 ? 2 : 0) |
+                        ((blue & (0x1 << shift)) > 0 ? 1 : 0);
+                node = node.children[index];
+            }
+            return new int[] { node.red / node.pixelCount, node.green / node.pixelCount, node.blue / node.pixelCount };
+        }
+    }
+
+    public int[][][] octreeQuantization(int[][][] imagePixels, int numberOfColors) {
+        // Create an Octree and add all colors from the image
+        Octree octree = new Octree(numberOfColors);
+        for (int[][] row : imagePixels) {
+            for (int[] pixel : row) {
+                octree.addColor(pixel[0], pixel[1], pixel[2]);
+            }
+        }
+
+        // Reduce the Octree to the desired number of colors
+        octree.reduceTree();
+
+        // Replace each pixel's color with the color of the Octree node that it belongs
+        // to
+        for (int x = 0; x < imagePixels.length; x++) {
+            for (int y = 0; y < imagePixels[0].length; y++) {
+                int[] color = octree.findColor(imagePixels[x][y][0], imagePixels[x][y][1],
+                        imagePixels[x][y][2]);
+                imagePixels[x][y] = color;
+            }
+        }
+
+        return imagePixels;
+    }
+
+    //uniform quantisation
+    public int[][][] quantization(int[][][] imagePixels, int numberOfColors) {
+        int binSize = (int) Math.ceil(256 / numberOfColors);
+        for (int x = 0; x < imagePixels.length; x++) {
+            for (int y = 0; y < imagePixels[0].length; y++) {
+                for (int z = 0; z < imagePixels[0][0].length; z++) {
+                    //retrieves the color value of the current color channel of the current pixel.
+                    int color = imagePixels[x][y][z];
+                    //calculates the new color value, which is the midpoint of the bin.
+                    int binIndex = color / binSize;
+                    //calculates the new color value, which is the midpoint of the bin.
+                    int quantizedColor = binSize * binIndex + binSize / 2;
+                    //replaces the original color value with the quantized color value.
+                    imagePixels[x][y][z] = quantizedColor;
+                }
+            }
+        }
+        return imagePixels;
+    }
+
+    final int numberOfColors = 24; // ranging 2 - 256 distinct color
 
     public void Compress(int[][][] pixels, String outputFileName) throws IOException {
         // The following is a bad implementation that we have intentionally put in the
@@ -11,6 +140,7 @@ public class Utility {
         // write code to reimplement the function without changing any of the input
         // parameters, and making sure the compressed file
         // gets written into outputFileName
+        pixels = quantization(pixels,numberOfColors );
         Quadrant image = new Quadrant((short)0, (short)0, (short)(pixels.length-1), (short)(pixels[0].length-1), pixels);
 
         QuadTreeUtils.splitQuadrant(image, pixels);
@@ -38,7 +168,7 @@ public class Utility {
                 int[][][] pixels = new int[width][height][3];
 
                 QuadTreeUtils.restoreImage(image, pixels);
-                return pixels;
+                return quantization(pixels,numberOfColors );
 
             } else {
                 throw new IOException("Invalid object type in the input file");
