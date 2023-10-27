@@ -5,6 +5,7 @@ A higher threshold gives us a more lossy image, because the quadrant is split wh
 Compression size of threshold = 20 performs better than 10. When 10 is used we find that most compressed sizes is bigger.
 
 ### RMSE_THRESHOLD = 20
+```
 Compilation successful. Now running...
 width = 500
 height = 375
@@ -106,8 +107,9 @@ Decompress Execution Time for 1254659.png : 547 milliseconds
 Mean Absolute Error of :1254659.png is 17.919697777777778
 Mean Squared Error of :1254659.png is 2921.433088   
 PSNR of :1254659.png is 13.474844171136855
-
+```
 ### RMSE_THRESHOLD = 10
+```
 Compilation successful. Now running...
 width = 500
 height = 375
@@ -209,7 +211,7 @@ Decompress Execution Time for 1254659.png : 680 milliseconds
 Mean Absolute Error of :1254659.png is 14.720204444444445
 Mean Squared Error of :1254659.png is 2212.0623946666665
 PSNR of :1254659.png is 14.682829881099043
-
+```
 ## Issues
 Note this is a WORK IN PROGRESS.
 There is a bug.
