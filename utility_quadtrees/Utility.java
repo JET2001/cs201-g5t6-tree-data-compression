@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 interface QuadTreeConstants {
-    int RMSE_THRESHOLD = 10;
+    int RMSE_THRESHOLD = 20;
 }
 
 public class Utility {
