@@ -56,7 +56,7 @@ height = 375
 Compress Execution Time for 10863862.png : 142 milliseconds
 Size of the original file for 10863862.png: 317432 bytes
 Size of the compressed file for 10863862.png: 430071 bytes
-Bytes saved from compression of 10863862.png: -112639 bytes
+Bytes saved from compression of 10863862.png: **-112639 bytes**
 Decompress Execution Time for 10863862.png : 239 milliseconds
 Mean Absolute Error of :10863862.png is 15.468149333333333
 Mean Squared Error of :10863862.png is 1706.374304  
@@ -67,7 +67,7 @@ height = 375
 Compress Execution Time for 11079715.png : 463 milliseconds
 Size of the original file for 11079715.png: 443815 bytes
 Size of the compressed file for 11079715.png: 1028433 bytes
-Bytes saved from compression of 11079715.png: -584618 bytes
+Bytes saved from compression of 11079715.png: **-584618 bytes**
 Decompress Execution Time for 11079715.png : 566 milliseconds
 Mean Absolute Error of :11079715.png is 16.21015111111111
 Mean Squared Error of :11079715.png is 2171.158090666667
@@ -100,7 +100,7 @@ height = 375
 Compress Execution Time for 11610969.png : 313 milliseconds
 Size of the original file for 11610969.png: 368720 bytes
 Size of the compressed file for 11610969.png: 633741 bytes
-Bytes saved from compression of 11610969.png: -265021 bytes
+Bytes saved from compression of 11610969.png: **-265021 bytes**
 Decompress Execution Time for 11610969.png : 419 milliseconds
 Mean Absolute Error of :11610969.png is 15.983502222222222
 Mean Squared Error of :11610969.png is 2022.0317333333332
@@ -111,7 +111,7 @@ height = 375
 Compress Execution Time for 1254659.png : 374 milliseconds
 Size of the original file for 1254659.png: 342646 bytes
 Size of the compressed file for 1254659.png: 771102 bytes
-Bytes saved from compression of 1254659.png: -428456 bytes
+Bytes saved from compression of 1254659.png: **-428456 bytes**
 Decompress Execution Time for 1254659.png : 441 milliseconds
 Mean Absolute Error of :1254659.png is 19.115130666666666
 Mean Squared Error of :1254659.png is 3186.7774773333335
