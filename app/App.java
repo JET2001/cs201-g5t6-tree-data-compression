@@ -8,7 +8,12 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
+// ========== ADD YOUR UTILITY IMPLEMENTATION HERE ====
 import utility_basic.Utility;
+// import utility_quadtrees.Utility;
+// import utility_quantised_quadtrees.Utility;
+// import utility_inttoshort.Utility;
+// ====================================================
 
 public class App {
     public static void main(String[] args) throws IOException, ClassNotFoundException{
@@ -49,6 +54,7 @@ public class App {
                     // Now you have the image data in 'pixelData' that will be taken in by Compress
 
                     // Define location and name for the compressed file to be created
+
                     String compressed_file_name = "./Compressed/" + imageName.substring(0, imageName.lastIndexOf('.')) + ".bin";
 
                     // start compress timer
@@ -94,7 +100,7 @@ public class App {
 
                     //Get the two bufferedimages for calculations
                     BufferedImage originalimage = ImageIO.read(new File(ImageDirectory + imageName));
-                    BufferedImage decompressedimage = ImageIO.read(new File("Decompressed/" + imageName)); 
+                    BufferedImage decompressedimage = ImageIO.read(new File("./Decompressed/" + imageName)); 
 
                     //calculate MAE
                     double MAE = MAECalculator.calculateMAE(originalimage, decompressedimage);
