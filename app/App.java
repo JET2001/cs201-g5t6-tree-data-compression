@@ -65,7 +65,9 @@ public class App {
 
                     // Define location and name for the compressed file to be created
 
+
                     String compressed_file_name = "../Compressed/" + imageName.substring(0, imageName.lastIndexOf('.')) + ".bin";
+
 
                     // start compress timer
                     long compressStartTime = System.currentTimeMillis();
@@ -110,7 +112,9 @@ public class App {
 
                     //Get the two bufferedimages for calculations
                     BufferedImage originalimage = ImageIO.read(new File(ImageDirectory + imageName));
+
                     BufferedImage decompressedimage = ImageIO.read(new File("../Decompressed/" + imageName)); 
+
 
                     //calculate MAE
                     double MAE = MAECalculator.calculateMAE(originalimage, decompressedimage);
