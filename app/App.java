@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 // ========== ADD YOUR UTILITY IMPLEMENTATION HERE ====
 // import utility_basic.Utility;
 // import utility_huffman_octree_quantised.Utility;
-import utility_basic.*;
+// import utility_basic.*;
 // import utility_quadtrees.Utility;
 // import utility_quantised_quadtrees.Utility;
 // ====================================================
@@ -159,9 +159,9 @@ public class App {
             System.out.println("Average MSE = " + mseValues.stream().mapToDouble(num -> num).average().getAsDouble());
             System.out.println("Max MSE = " + mseValues.stream().mapToDouble(num -> num).max().getAsDouble());
             System.out.println("----------------------------------------------------------------------------"); 
-            System.out.println("Min PSNR = " + mseValues.stream().mapToDouble(num -> num).min().getAsDouble());
-            System.out.println("Average PSNR = " + mseValues.stream().mapToDouble(num -> num).average().getAsDouble());
-            System.out.println("Max PSNR = " + mseValues.stream().mapToDouble(num -> num).max().getAsDouble());
+            System.out.println("Min PSNR = " + psnrValues.stream().mapToDouble(num -> num).min().getAsDouble());
+            System.out.println("Average PSNR = " + psnrValues.stream().mapToDouble(num -> num).average().getAsDouble());
+            System.out.println("Max PSNR = " + psnrValues.stream().mapToDouble(num -> num).max().getAsDouble());
             
         }
 
