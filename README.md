@@ -51,4 +51,4 @@ If there are 3 values in 1 cell, they correspond to `(min, avg, max)`
 |Quad Trees (threshold = 20) | (36, 103, 244) | (-582107, -54807, 337244) | (47, 130, 327) | (8, 13, 25) | (494, 1646, 3644) | (12.5, 16.8, 21.2) | 
 |Quad Trees (quantised) (threshold = 20, channels = 25)| (45, 189, 407) | (-584648, -52968, 339818) | (52, 223, 519) | (8.57, 14.25, 26.14) | (490, 1694, 3683) | (12.5, 16.7, 21.2) |
 |Huffman with KD-Tree Quantisation and uniform quantisation | (281, 432, 1077) | (8549, 142361, 315796) | (225, 312.3, 536) | (7.8, 8.3, 9.58) | (242.6, 280.1, 357.8) | (22.6, 23.6, 24.3) |
-|Huffman with KD-Tree and uniform quantisation with max-depth limit | (253, 373, 1061) | (8549, 142361.6, 315796) | (165, 270.6, 396.0) | (7.8, 8.4, 9.7) | (242, 280, 357) | (22.6, 23.6, 24.3) | 
+|Huffman with KD-Tree and uniform quantisation with max-depth limit | (255, 394.6, 1087) | (8549, 142361.6, 315796) | (13.0, 20.6, 37.0) | (7.7, 8.3, 9.6) | (240, 279, 355) | (22.6, 23.7, 24.3) | 
