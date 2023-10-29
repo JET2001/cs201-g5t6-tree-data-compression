@@ -304,7 +304,7 @@ public class Utility {
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
         // Quantize the image data
         int[][][] quantizedImagePixels = uniformQuantization(imagePixels, numberOfColors);
-        quantizedImagePixels = kdQuantization(imagePixels, numberOfColors * 2, maxNodesToVisit, maxDepth);
+        quantizedImagePixels = kdQuantization(imagePixels, numberOfColors, maxNodesToVisit, maxDepth);
         // quantizedImagePixels = octreeQuantization(imagePixels, numberOfColors);
 
         // Calculate color frequencies in the image
@@ -349,7 +349,7 @@ public class Utility {
             // Dequantize the image pixels
             // quantizedImagePixels = octreeQuantization(quantizedImagePixels,
             // numberOfColors);
-            quantizedImagePixels = kdQuantization(quantizedImagePixels, numberOfColors * 2, maxNodesToVisit, maxDepth);
+            quantizedImagePixels = kdQuantization(quantizedImagePixels, numberOfColors, maxNodesToVisit, maxDepth);
             return uniformQuantization(quantizedImagePixels, numberOfColors);
             // return quantizedImagePixels;
         }
