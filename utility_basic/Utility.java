@@ -164,9 +164,11 @@ public class Utility {
     private static class KDTree {
         private KDNode root;
         private int maxNodesToVisit;
+        private double maxDepth;
     
-        public KDTree(List<Point> points, int maxNodesToVisit) {
+        public KDTree(List<Point> points, int maxNodesToVisit, double maxDepth) {
             this.maxNodesToVisit = maxNodesToVisit;
+            this.maxDepth = maxDepth;
             // Build the KD-tree from the given list of points
             root = buildKDTree(points, 0);
         }
@@ -200,7 +202,7 @@ public class Utility {
     
         // Recursive method to find the nearest neighbor within the KD-tree
         private KDNode findNearestNeighbor(KDNode node, Point target, int depth, int nodesLeft) {
-            if (node == null || nodesLeft <= 0) {
+            if (node == null || nodesLeft <= 0 || depth == this.maxDepth) {
                 return null;
             }
     
@@ -252,7 +254,7 @@ public class Utility {
     }
     
     // Method to perform k-d tree quantization on image pixels
-    public int[][][] kdQuantization(int[][][] imagePixels, int numberOfColors, int maxNodes) {
+    public int[][][] kdQuantization(int[][][] imagePixels, int numberOfColors, int maxNodes, double maxDepth) {
         // Convert the image pixels to a list of points
         List<Point> points = Arrays.stream(imagePixels)
                 .flatMap(Arrays::stream)
@@ -260,7 +262,7 @@ public class Utility {
                 .collect(Collectors.toList());
     
         // Build the k-d tree
-        KDTree kdTree = new KDTree(points, maxNodes);
+        KDTree kdTree = new KDTree(points, maxNodes, maxDepth);
     
         // Quantize the image pixels
         IntStream.range(0, imagePixels.length).parallel().forEach(x -> {
@@ -296,11 +298,13 @@ public class Utility {
 
     final int numberOfColors = 8; // the lower the faster
 
+    final int maxNodesToVisit = 12;
+    final int maxDepth = 11;
     // Method to compress image data and save it to a file
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
         // Quantize the image data
         int[][][] quantizedImagePixels = uniformQuantization(imagePixels, numberOfColors);
-        quantizedImagePixels = kdQuantization(imagePixels, numberOfColors * 2, 11);
+        quantizedImagePixels = kdQuantization(imagePixels, numberOfColors * 2, maxNodesToVisit, maxDepth);
         // quantizedImagePixels = octreeQuantization(imagePixels, numberOfColors);
 
         // Calculate color frequencies in the image
@@ -345,7 +349,7 @@ public class Utility {
             // Dequantize the image pixels
             // quantizedImagePixels = octreeQuantization(quantizedImagePixels,
             // numberOfColors);
-            quantizedImagePixels = kdQuantization(quantizedImagePixels, numberOfColors * 2, 11);
+            quantizedImagePixels = kdQuantization(quantizedImagePixels, numberOfColors * 2, maxNodesToVisit, maxDepth);
             return uniformQuantization(quantizedImagePixels, numberOfColors);
             // return quantizedImagePixels;
         }
