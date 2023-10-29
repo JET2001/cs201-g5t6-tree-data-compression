@@ -305,7 +305,6 @@ public class Utility {
         // Quantize the image data
         int[][][] quantizedImagePixels = uniformQuantization(imagePixels, numberOfColors);
         quantizedImagePixels = kdQuantization(imagePixels, numberOfColors, maxNodesToVisit, maxDepth);
-        // quantizedImagePixels = octreeQuantization(imagePixels, numberOfColors);
 
         // Calculate color frequencies in the image
         Map<Integer, Integer> colorFrequencies = calculateColorFrequencies(quantizedImagePixels);
@@ -346,12 +345,8 @@ public class Utility {
             // Reconstruct the original image pixels
             int[][][] quantizedImagePixels = reconstructImagePixels(huffmanTree, compressedDataByteArray);
 
-            // Dequantize the image pixels
-            // quantizedImagePixels = octreeQuantization(quantizedImagePixels,
-            // numberOfColors);
-            quantizedImagePixels = kdQuantization(quantizedImagePixels, numberOfColors, maxNodesToVisit, maxDepth);
-            return uniformQuantization(quantizedImagePixels, numberOfColors);
-            // return quantizedImagePixels;
+            // no need to dequantize the image pixels
+            return quantizedImagePixels;
         }
     }
 
