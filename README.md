@@ -45,10 +45,12 @@ Place the images in the root directory (NOT inside the `app/` directory). The pa
 ```
 ## Results
 If there are 3 values in 1 cell, they correspond to `(min, avg, max)`
-|Algo Desc| Compressed Time | Bytes Saved | Decompress Time | MAE | MSE | PSNR |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|Huffman with octree quantisation and uniform quantisation | (30, 56, 110) | (71620, 198407, 381078) | (7, 10.7, 28) | (14, 17, 20) | (887, 1192, 1544) | (16.2, 17.4, 18.7) |
-|Quad Trees (threshold = 20) | (36, 103, 244) | (-582107, -54807, 337244) | (47, 130, 327) | (8, 13, 25) | (494, 1646, 3644) | (12.5, 16.8, 21.2) | 
-|Quad Trees (quantised) (threshold = 20, channels = 25)| (45, 189, 407) | (-584648, -52968, 339818) | (52, 223, 519) | (8.57, 14.25, 26.14) | (490, 1694, 3683) | (12.5, 16.7, 21.2) |
+|Algo Desc| Compressed Time | Bytes Saved | Decompress Time | MAE | MSE | PSNR | % Saved |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+|Huffman Only | (27, 61, 129) | (-340756, -201055, -39746) | (16, 20.3, 30) | (0, 0, 0) | (0, 0.031, 0.169) | (55.8, Inf, Inf) | (-160, -75, -7.91) |
+|Huffman + Uniform Quantisation | (51, 101, 177) | (8560, 142288.1, 315653) | (15, 30, 61) | (7.7, 8.3, 9.5) | (230, 271, 343) | (22.7, 23.8, 24.5) | (4.02, 40.2, 62.7) |
+|Huffman with octree quantisation and uniform quantisation | (30, 56, 110) | (71620, 198407, 381078) | (9, 14.5, 26) | (14, 17, 20) | (887, 1192, 1544) | (16.2, 17.4, 18.7) | (33.6, 59.0, 75.7) |  
+|Quad Trees (threshold = 20) | (36, 103, 244) | (-582107, -54807, 337244) | (47, 130, 327) | (8, 13, 25) | (494, 1646, 3644) | (12.5, 16.8, 21.2) | (-134, -10.4, 72) | 
+|Quad Trees (quantised) (threshold = 20, channels = 25)| (45, 212, 564) | (-584648, -52968, 339818) | (52, 223, 519) | (8.57, 14.25, 26.14) | (490, 1694, 3683) | (12.5, 16.7, 21.2) | (-131, -10, 72) |
 |Huffman with KD-Tree Quantisation and uniform quantisation | (281, 432, 1077) | (8549, 142361, 315796) | (225, 312.3, 536) | (7.8, 8.3, 9.58) | (242.6, 280.1, 357.8) | (22.6, 23.6, 24.3) |
-|Huffman with KD-Tree and uniform quantisation with max-depth limit | (255, 394.6, 1087) | (8549, 142361.6, 315796) | (13.0, 20.6, 37.0) | (7.7, 8.3, 9.6) | (240, 279, 355) | (22.6, 23.7, 24.3) | 
+|Huffman with KD-Tree and uniform quantisation with max-depth limit | (296, 484, 715) | (8549, 142361, 315796) | (14, 27, 63) | (7.8, 8.3, 9.58) | (242.6, 280.1, 357.8) | (22.6, 23.6, 24.3) | (4.0, 40.3, 62.8) |
