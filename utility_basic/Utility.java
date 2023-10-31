@@ -135,6 +135,7 @@ public class Utility {
     // Public class for representing a point in a multi-dimensional space
     public class Point {
         private int[] coordinates;
+        private int dimension = 3;
 
         public Point(int[] coordinates) {
             this.coordinates = coordinates;
@@ -143,11 +144,6 @@ public class Utility {
         // Method to get the coordinate value at a specific dimension
         public double get(int dimension) {
             return coordinates[dimension];
-        }
-
-        // Method to get the number of dimensions in the point
-        public int numDimensions() {
-            return coordinates.length;
         }
     }
 
@@ -177,7 +173,7 @@ public class Utility {
             if (points.isEmpty()) {
                 return null;
             }
-            int axis = depth % 3;
+            int axis = depth % points.get(0).dimension;
 
             // Sort the points based on the current axis and find the median
             Comparator<Point> comparator = Comparator.comparing(point -> point.get(axis));
@@ -205,7 +201,7 @@ public class Utility {
                 return null;
             }
 
-            int axis = depth % 3;
+            int axis = depth % target.dimension;
 
             KDNode nextBranch = null;
             KDNode oppositeBranch = null;
@@ -243,7 +239,7 @@ public class Utility {
         // Helper method to calculate the Euclidean distance between two points
         private double distance(Point a, Point b) {
             double sum = 0;
-            for (int i = 0; i < a.numDimensions(); i++) {
+            for (int i = 0; i < a.dimension; i++) {
                 double diff = a.get(i) - b.get(i);
                 sum += diff * diff;
             }
@@ -442,11 +438,7 @@ public class Utility {
 
     // Build the compressed data string
     private String buildCompressedDataString(List<String> encodedData) {
-        StringBuilder compressedDataBuilder = new StringBuilder();
-        for (String code : encodedData) {
-            compressedDataBuilder.append(code);
-        }
-        return compressedDataBuilder.toString();
+        return encodedData.stream().collect(Collectors.joining());
     }
 
     // Reconstruct the image pixels from compressed data
