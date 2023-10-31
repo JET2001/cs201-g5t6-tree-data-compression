@@ -303,7 +303,9 @@ public class Utility {
     // Method to compress image data and save it to a file
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
         // Quantize the image data
-        int[][][] quantizedImagePixels = kdQuantization(imagePixels, numberOfColors, maxNodesToVisit, maxDepth);
+        
+        int[][][] quantizedImagePixels = uniformQuantization(imagePixels, numberOfColors);
+        quantizedImagePixels = kdQuantization(quantizedImagePixels, numberOfColors, maxNodesToVisit, maxDepth);
 
         // Calculate color frequencies in the image
         Map<Integer, Integer> colorFrequencies = calculateColorFrequencies(quantizedImagePixels);
