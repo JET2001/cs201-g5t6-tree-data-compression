@@ -300,19 +300,21 @@ public class Utility {
         // Determine the number of colors based on the standard deviation
         if (stdDev < 50) {
             // Simple image
-            numberOfColors = 16;
-            maxNodesToVisit = 13;
-            maxDepth = 13;
+                        numberOfColors = 16;
+            maxNodesToVisit = 15;
+            maxDepth = 15;
+
+
         } else if (stdDev < 100) {
             // Medium complexity image
             numberOfColors = 8;
-            maxNodesToVisit = 12;
-            maxDepth = 12;
+            maxNodesToVisit = 14;
+            maxDepth = 14;
         } else {
             // Complex image
-            numberOfColors = 4; 
-            maxNodesToVisit = 11;
-            maxDepth = 11;
+            numberOfColors = 4;
+            maxNodesToVisit = 13;
+            maxDepth = 13;
         }
 
         // Perform uniform quantization with the determined number of colors
