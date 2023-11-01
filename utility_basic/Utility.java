@@ -135,83 +135,77 @@ public class Utility {
     // Public class for representing a point in a multi-dimensional space
     public class Point {
         private int[] coordinates;
-    
+        private int dimension = 3;
+
         public Point(int[] coordinates) {
             this.coordinates = coordinates;
         }
-    
+
         // Method to get the coordinate value at a specific dimension
         public double get(int dimension) {
             return coordinates[dimension];
         }
-    
-        // Method to get the number of dimensions in the point
-        public int numDimensions() {
-            return coordinates.length;
-        }
     }
-    
+
     private static class KDNode {
         Point point;
         KDNode left;
         KDNode right;
-    
+
         KDNode(Point point) {
             this.point = point;
         }
     }
-    
+
     private static class KDTree {
         private KDNode root;
         private int maxNodesToVisit;
         private double maxDepth;
-    
+
         public KDTree(List<Point> points, int maxNodesToVisit, double maxDepth) {
             this.maxNodesToVisit = maxNodesToVisit;
             this.maxDepth = maxDepth;
             // Build the KD-tree from the given list of points
             root = buildKDTree(points, 0);
         }
-    
+
         private KDNode buildKDTree(List<Point> points, int depth) {
             if (points.isEmpty()) {
                 return null;
             }
-    
-            int k = points.get(0).numDimensions();
-            int axis = depth % k;
-    
+            int axis = depth % points.get(0).dimension;
+
             // Sort the points based on the current axis and find the median
             Comparator<Point> comparator = Comparator.comparing(point -> point.get(axis));
             points.sort(comparator);
-    
+
             int medianIndex = points.size() / 2;
             KDNode root = new KDNode(points.get(medianIndex));
-    
-            // Create the left and right subtrees using the points to the left and right of the median
+
+            // Create the left and right subtrees using the points to the left and right of
+            // the median
             root.left = buildKDTree(points.subList(0, medianIndex), depth + 1);
             root.right = buildKDTree(points.subList(medianIndex + 1, points.size()), depth + 1);
-    
+
             return root;
         }
-    
+
         // Method to find the nearest neighbor to a given target point
         public Point findNearestNeighbor(Point target) {
             return findNearestNeighbor(root, target, 0, maxNodesToVisit).point;
         }
-    
+
         // Recursive method to find the nearest neighbor within the KD-tree
         private KDNode findNearestNeighbor(KDNode node, Point target, int depth, int nodesLeft) {
             if (node == null || nodesLeft <= 0 || depth == this.maxDepth) {
                 return null;
             }
-    
-            int k = target.numDimensions();
-            int axis = depth % k;
-    
+
+            int axis = depth % target.dimension;
+
             KDNode nextBranch = null;
             KDNode oppositeBranch = null;
-    
+
             if (target.get(axis) < node.point.get(axis)) {
                 nextBranch = node.left;
                 oppositeBranch = node.right;
@@ -219,16 +213,16 @@ public class Utility {
                 nextBranch = node.right;
                 oppositeBranch = node.left;
             }
-    
+
             KDNode best = minDistance(node, findNearestNeighbor(nextBranch, target, depth + 1, nodesLeft - 1), target);
-    
+
             if (distance(best.point, target) > Math.abs(node.point.get(axis) - target.get(axis))) {
                 best = minDistance(best, findNearestNeighbor(oppositeBranch, target, depth + 1, nodesLeft - 1), target);
             }
-    
+
             return best;
         }
-    
+
         // Helper method to find the node with the minimum distance to a target point
         private KDNode minDistance(KDNode a, KDNode b, Point target) {
             if (a == null) {
@@ -241,18 +235,18 @@ public class Utility {
                 return b;
             }
         }
-    
+
         // Helper method to calculate the Euclidean distance between two points
         private double distance(Point a, Point b) {
             double sum = 0;
-            for (int i = 0; i < a.numDimensions(); i++) {
+            for (int i = 0; i < a.dimension; i++) {
                 double diff = a.get(i) - b.get(i);
                 sum += diff * diff;
             }
             return Math.sqrt(sum);
         }
     }
-    
+
     // Method to perform k-d tree quantization on image pixels
     public int[][][] kdQuantization(int[][][] imagePixels, int numberOfColors, int maxNodes, double maxDepth) {
         // Convert the image pixels to a list of points
@@ -260,10 +254,10 @@ public class Utility {
                 .flatMap(Arrays::stream)
                 .map(pixel -> new Point(Arrays.stream(pixel).toArray()))
                 .collect(Collectors.toList());
-    
+
         // Build the k-d tree
         KDTree kdTree = new KDTree(points, maxNodes, maxDepth);
-    
+
         // Quantize the image pixels
         IntStream.range(0, imagePixels.length).parallel().forEach(x -> {
             IntStream.range(0, imagePixels[0].length).parallel().forEach(y -> {
@@ -275,10 +269,9 @@ public class Utility {
                 });
             });
         });
-    
+
         return imagePixels;
     }
-    
 
     // uniform quantization
     public int[][][] uniformQuantization(int[][][] imagePixels, int numberOfColors) {
@@ -296,15 +289,60 @@ public class Utility {
         return imagePixels;
     }
 
-    final int numberOfColors = 8; // the lower the faster
+    int numberOfColors = 0;
+    int maxNodesToVisit = 0;
+    int maxDepth = 0;
 
-    final int maxNodesToVisit = 12;
-    final int maxDepth = 11;
+    public int[][][] adaptiveQuantization(int[][][] imagePixels) {
+        // Calculate the standard deviation of the color values
+        double stdDev = calculateStandardDeviation(imagePixels);
+
+        // Determine the number of colors based on the standard deviation
+        if (stdDev < 50) {
+            // Simple image
+            numberOfColors = 4;
+            maxNodesToVisit = 13;
+            maxDepth = 13;
+        } else {
+            // Medium complexity image
+            numberOfColors = 8;
+            maxNodesToVisit = 14;
+            maxDepth = 14;
+        }
+
+        // Perform uniform quantization with the determined number of colors
+        return uniformQuantization(imagePixels, numberOfColors);
+    }
+
+    private double calculateStandardDeviation(int[][][] imagePixels) {
+        int sum = 0;
+        int count = 0;
+        for (int[][] row : imagePixels) {
+            for (int[] pixel : row) {
+                for (int color : pixel) {
+                    sum += color;
+                    count++;
+                }
+            }
+        }
+        double mean = (double) sum / count;
+
+        double sumOfSquares = 0;
+        for (int[][] row : imagePixels) {
+            for (int[] pixel : row) {
+                for (int color : pixel) {
+                    sumOfSquares += Math.pow(color - mean, 2);
+                }
+            }
+        }
+
+        return Math.sqrt(sumOfSquares / count);
+    }
+
     // Method to compress image data and save it to a file
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
         // Quantize the image data
-        
-        int[][][] quantizedImagePixels = uniformQuantization(imagePixels, numberOfColors);
+        int[][][] quantizedImagePixels = adaptiveQuantization(imagePixels);
         quantizedImagePixels = kdQuantization(quantizedImagePixels, numberOfColors, maxNodesToVisit, maxDepth);
 
         // Calculate color frequencies in the image
@@ -395,11 +433,7 @@ public class Utility {
 
     // Build the compressed data string
     private String buildCompressedDataString(List<String> encodedData) {
-        StringBuilder compressedDataBuilder = new StringBuilder();
-        for (String code : encodedData) {
-            compressedDataBuilder.append(code);
-        }
-        return compressedDataBuilder.toString();
+        return encodedData.stream().collect(Collectors.joining());
     }
 
     // Reconstruct the image pixels from compressed data

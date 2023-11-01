@@ -9,7 +9,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 // ========== ADD YOUR UTILITY IMPLEMENTATION HERE ====
-// import utility_basic.Utility;
+import utility_basic.Utility;
 // import utility_huffman_octree_quantised.Utility;
 // import utility_basic.*;
 // import utility_quadtrees.Utility;
@@ -24,7 +24,7 @@ public class App {
         Utility Utility = new Utility();
 
         //Define original file directory to loop through
-        String ImageDirectory = "../Original/";
+        String ImageDirectory = "./Original/";
 
         // List all files in the directory
         File directory = new File(ImageDirectory);
@@ -37,6 +37,7 @@ public class App {
         List<Double> maeValues = new ArrayList<>();
         List<Double> mseValues = new ArrayList<>();
         List<Double> psnrValues = new ArrayList<>();
+        List<Double> percentSaved = new ArrayList<>();
 
         if (files != null) {
             for (File file : files) {
@@ -68,7 +69,7 @@ public class App {
                     // Define location and name for the compressed file to be created
 
 
-                    String compressed_file_name = "../Compressed/" + imageName.substring(0, imageName.lastIndexOf('.')) + ".bin";
+                    String compressed_file_name = "./Compressed/" + imageName.substring(0, imageName.lastIndexOf('.')) + ".bin";
 
 
                     // start compress timer
@@ -110,12 +111,12 @@ public class App {
 
                     //convert back to image for visualisation
                     PixeltoImageConverter PixeltoImageConverter = new PixeltoImageConverter(newPixelData);
-                    PixeltoImageConverter.saveImage("../Decompressed/" + imageName, "png");
+                    PixeltoImageConverter.saveImage("./Decompressed/" + imageName, "png");
 
                     //Get the two bufferedimages for calculations
                     BufferedImage originalimage = ImageIO.read(new File(ImageDirectory + imageName));
 
-                    BufferedImage decompressedimage = ImageIO.read(new File("../Decompressed/" + imageName)); 
+                    BufferedImage decompressedimage = ImageIO.read(new File("./Decompressed/" + imageName)); 
 
 
                     //calculate MAE
@@ -137,6 +138,7 @@ public class App {
                     maeValues.add(MAE);
                     mseValues.add(MSE);
                     psnrValues.add(PSNR);
+                    percentSaved.add((double)differenceInFileSize/originalFileSize * 100);
                 }
             }
             System.out.println("=============== AGGREGATED RESULTS FOR ALGO =====================");
@@ -147,6 +149,10 @@ public class App {
             System.out.println("least bytes Saved = " + bytesSaved.stream().mapToDouble(num -> num).min().getAsDouble());
             System.out.println("average bytes Saved = " + bytesSaved.stream().mapToDouble(num -> num).average().getAsDouble());
             System.out.println("max bytes Saved = " + bytesSaved.stream().mapToDouble(num -> num).max().getAsDouble());
+            System.out.println("----------------------------------------------------------------------------"); 
+            System.out.println("Min percentage saved = " + percentSaved.stream().mapToDouble(num -> num).min().getAsDouble());
+            System.out.println("Average percentage saved = " + percentSaved.stream().mapToDouble(num -> num).average().getAsDouble());
+            System.out.println("Max percentage saved = " + percentSaved.stream().mapToDouble(num -> num).max().getAsDouble());
             System.out.println("----------------------------------------------------------------------------"); 
             System.out.println("Min Decompress Time = " + decompressTimes.stream().mapToDouble(num -> num).min().getAsDouble());
             System.out.println("Average Decompress Time = " + decompressTimes.stream().mapToDouble(num -> num).average().getAsDouble());
