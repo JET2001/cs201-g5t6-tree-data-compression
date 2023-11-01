@@ -243,12 +243,12 @@ public class Utility {
                 double diff = a.get(i) - b.get(i);
                 sum += diff * diff;
             }
-            return Math.sqrt(sum);
+            return sum;
         }
     }
 
     // Method to perform k-d tree quantization on image pixels
-    public int[][][] kdQuantization(int[][][] imagePixels, int numberOfColors, int maxNodes, double maxDepth) {
+    public int[][][] kdQuantization(int[][][] imagePixels, int maxNodes, double maxDepth) {
         // Convert the image pixels to a list of points
         List<Point> points = Arrays.stream(imagePixels)
                 .flatMap(Arrays::stream)
@@ -275,7 +275,7 @@ public class Utility {
 
     // uniform quantization
     public int[][][] uniformQuantization(int[][][] imagePixels, int numberOfColors) {
-        int binSize = (int) Math.ceil(256 / numberOfColors);
+        int binSize = (int) Math.floor(256.0 / numberOfColors);
         for (int x = 0; x < imagePixels.length; x++) {
             for (int y = 0; y < imagePixels[0].length; y++) {
                 for (int z = 0; z < imagePixels[0][0].length; z++) {
@@ -289,12 +289,11 @@ public class Utility {
         return imagePixels;
     }
 
-    int numberOfColors = 0;
-    int maxNodesToVisit = 0;
-    int maxDepth = 0;
-
     public int[][][] adaptiveQuantization(int[][][] imagePixels) {
         // Calculate the standard deviation of the color values
+        int numberOfColors = 0;
+        int maxNodesToVisit = 0;
+        int maxDepth = 0;
         double stdDev = calculateStandardDeviation(imagePixels);
 
         // Determine the number of colors based on the standard deviation
@@ -304,14 +303,15 @@ public class Utility {
             maxNodesToVisit = 13;
             maxDepth = 13;
         } else {
-            // Medium complexity image
+            // Complex image
             numberOfColors = 8;
             maxNodesToVisit = 14;
             maxDepth = 14;
         }
 
         // Perform uniform quantization with the determined number of colors
-        return uniformQuantization(imagePixels, numberOfColors);
+        int[][][] quantizedImagePixels =  uniformQuantization(imagePixels, numberOfColors);
+        return  kdQuantization(quantizedImagePixels, maxNodesToVisit, maxDepth);
     }
 
     private double calculateStandardDeviation(int[][][] imagePixels) {
@@ -343,7 +343,6 @@ public class Utility {
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
         // Quantize the image data
         int[][][] quantizedImagePixels = adaptiveQuantization(imagePixels);
-        quantizedImagePixels = kdQuantization(quantizedImagePixels, numberOfColors, maxNodesToVisit, maxDepth);
 
         // Calculate color frequencies in the image
         Map<Integer, Integer> colorFrequencies = calculateColorFrequencies(quantizedImagePixels);
@@ -470,5 +469,4 @@ public class Utility {
         }
         return imagePixels;
     }
-
 }
