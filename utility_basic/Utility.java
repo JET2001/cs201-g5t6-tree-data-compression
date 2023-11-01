@@ -275,7 +275,7 @@ public class Utility {
 
     // uniform quantization
     public int[][][] uniformQuantization(int[][][] imagePixels, int numberOfColors) {
-        int binSize = (int) Math.floor(256 / numberOfColors);
+        int binSize = (int) Math.ceil(256 / numberOfColors);
         for (int x = 0; x < imagePixels.length; x++) {
             for (int y = 0; y < imagePixels[0].length; y++) {
                 for (int z = 0; z < imagePixels[0][0].length; z++) {
@@ -298,16 +298,16 @@ public class Utility {
         double stdDev = calculateStandardDeviation(imagePixels);
 
         // Determine the number of colors based on the standard deviation
-        if (stdDev <= 50) {
+        if (stdDev < 50) {
             // Simple image
             numberOfColors = 4;
-            maxNodesToVisit = 12;
-            maxDepth = 12;
+            maxNodesToVisit = 13;
+            maxDepth = 13;
         } else {
             // Medium complexity image
             numberOfColors = 8;
-            maxNodesToVisit = 13;
-            maxDepth = 13;
+            maxNodesToVisit = 14;
+            maxDepth = 14;
         }
 
         // Perform uniform quantization with the determined number of colors
