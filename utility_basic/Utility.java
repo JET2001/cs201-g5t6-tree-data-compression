@@ -298,21 +298,14 @@ public class Utility {
         double stdDev = calculateStandardDeviation(imagePixels);
 
         // Determine the number of colors based on the standard deviation
-        if (stdDev < 50) {
+        if (stdDev <= 50) {
             // Simple image
-                        numberOfColors = 16;
-            maxNodesToVisit = 15;
-            maxDepth = 15;
-
-
-        } else if (stdDev < 100) {
+            numberOfColors = 4;
+            maxNodesToVisit = 12;
+            maxDepth = 12;
+        } else {
             // Medium complexity image
             numberOfColors = 8;
-            maxNodesToVisit = 14;
-            maxDepth = 14;
-        } else {
-            // Complex image
-            numberOfColors = 4;
             maxNodesToVisit = 13;
             maxDepth = 13;
         }
