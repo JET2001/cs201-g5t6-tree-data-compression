@@ -1,4 +1,7 @@
 /Compressed
 /Decompressed
-/Original
+/Original*
 /compiled
+/data_analysis_utils/cs201-analysis-venv
+/data_analysis_utils/.ipynb_checkpoints
+/**/scalable_images
