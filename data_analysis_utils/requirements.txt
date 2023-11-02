@@ -1,0 +1,6 @@
+numpy
+matplotlib
+Pillow
+notebook
+plotly
+seaborn
