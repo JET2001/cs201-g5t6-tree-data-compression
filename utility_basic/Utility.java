@@ -39,8 +39,8 @@ public class Utility {
 
     // Inner class for representing a Huffman tree
     private static class HuffmanTree implements Serializable {
-        // Fields for image dimensions, color depth, and the root node of the Huffman
-        // tree
+        // Fields for image dimensions, color depth, and the root node of the Huffman tree
+
         private final int imageWidth;
         private final int imageHeight;
         private final int colorDepth;
@@ -142,7 +142,7 @@ public class Utility {
         }
 
         // Method to get the coordinate value at a specific dimension
-        public double get(int dimension) {
+        public int get(int dimension) {
             return coordinates[dimension];
         }
     }
@@ -265,7 +265,7 @@ public class Utility {
                 Point point = new Point(coordinates);
                 Point nearestNeighbor = kdTree.findNearestNeighbor(point);
                 IntStream.range(0, imagePixels[0][0].length).forEach(z -> {
-                    imagePixels[x][y][z] = (int) nearestNeighbor.get(z);
+                    imagePixels[x][y][z] = nearestNeighbor.get(z);
                 });
             });
         });
@@ -275,7 +275,7 @@ public class Utility {
 
     // uniform quantization
     public int[][][] uniformQuantization(int[][][] imagePixels, int numberOfColors) {
-        int binSize = (int) Math.floor(256.0 / numberOfColors);
+        int binSize = imagePixels[0].length / numberOfColors;
         for (int x = 0; x < imagePixels.length; x++) {
             for (int y = 0; y < imagePixels[0].length; y++) {
                 for (int z = 0; z < imagePixels[0][0].length; z++) {
@@ -292,26 +292,24 @@ public class Utility {
     public int[][][] adaptiveQuantization(int[][][] imagePixels) {
         // Calculate the standard deviation of the color values
         int numberOfColors = 0;
-        int maxNodesToVisit = 0;
-        int maxDepth = 0;
         double stdDev = calculateStandardDeviation(imagePixels);
 
         // Determine the number of colors based on the standard deviation
         if (stdDev < 50) {
             // Simple image
-            numberOfColors = 4;
-            maxNodesToVisit = 13;
-            maxDepth = 13;
+            numberOfColors = 8;
+            int maxNodesToVisit = 11;
+            int maxDepth = 11;
+
+            int[][][] quantizedImagePixels =  uniformQuantization(imagePixels, numberOfColors);
+            return kdQuantization(quantizedImagePixels, maxNodesToVisit, maxDepth);
+            
         } else {
             // Complex image
             numberOfColors = 8;
-            maxNodesToVisit = 14;
-            maxDepth = 14;
-        }
 
-        // Perform uniform quantization with the determined number of colors
-        int[][][] quantizedImagePixels =  uniformQuantization(imagePixels, numberOfColors);
-        return  kdQuantization(quantizedImagePixels, maxNodesToVisit, maxDepth);
+            return uniformQuantization(imagePixels, numberOfColors);
+        }
     }
 
     private double calculateStandardDeviation(int[][][] imagePixels) {
