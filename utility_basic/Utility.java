@@ -300,18 +300,18 @@ public class Utility {
         if (stdDev < 50) {
             // Simple image
             numberOfColors = 4;
-            maxNodesToVisit = 13;
-            maxDepth = 13;
+            maxNodesToVisit = 12;
+            maxDepth = 12;
         } else {
             // Complex image
             numberOfColors = 8;
-            maxNodesToVisit = 14;
-            maxDepth = 14;
+            maxNodesToVisit = 12;
+            maxDepth = 12;
         }
 
         // Perform uniform quantization with the determined number of colors
         int[][][] quantizedImagePixels =  uniformQuantization(imagePixels, numberOfColors);
-        return  kdQuantization(quantizedImagePixels, maxNodesToVisit, maxDepth);
+        return  quantizedImagePixels; //kdQuantization(quantizedImagePixels, maxNodesToVisit, maxDepth);
     }
 
     private double calculateStandardDeviation(int[][][] imagePixels) {
@@ -343,6 +343,8 @@ public class Utility {
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
         // Quantize the image data
         int[][][] quantizedImagePixels = adaptiveQuantization(imagePixels);
+        
+        // quantizedImagePixels = kdQuantization(quantizedImagePixels, numberOfColors, maxNodesToVisit, maxDepth);
 
         // Calculate color frequencies in the image
         Map<Integer, Integer> colorFrequencies = calculateColorFrequencies(quantizedImagePixels);
@@ -354,7 +356,7 @@ public class Utility {
         Map<Integer, String> huffmanCodes = huffmanTree.generateHuffmanCodes();
 
         // Encode the image data using Huffman codes
-        List<String> encodedImageData = encodeImageData(quantizedImagePixels, huffmanCodes);
+        List<String> encodedImageData = encodeImageData(imagePixels, huffmanCodes);
 
         // Build the compressed data string
         String compressedDataString = buildCompressedDataString(encodedImageData);
