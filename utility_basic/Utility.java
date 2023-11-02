@@ -142,7 +142,7 @@ public class Utility {
         }
 
         // Method to get the coordinate value at a specific dimension
-        public double get(int dimension) {
+        public int get(int dimension) {
             return coordinates[dimension];
         }
     }
@@ -265,7 +265,7 @@ public class Utility {
                 Point point = new Point(coordinates);
                 Point nearestNeighbor = kdTree.findNearestNeighbor(point);
                 IntStream.range(0, imagePixels[0][0].length).forEach(z -> {
-                    imagePixels[x][y][z] = (int) nearestNeighbor.get(z);
+                    imagePixels[x][y][z] = nearestNeighbor.get(z);
                 });
             });
         });
@@ -275,7 +275,7 @@ public class Utility {
 
     // uniform quantization
     public int[][][] uniformQuantization(int[][][] imagePixels, int numberOfColors) {
-        int binSize = (int) Math.ceil(256.0 / numberOfColors);
+        int binSize = imagePixels[0].length / numberOfColors;
         for (int x = 0; x < imagePixels.length; x++) {
             for (int y = 0; y < imagePixels[0].length; y++) {
                 for (int z = 0; z < imagePixels[0][0].length; z++) {
@@ -297,7 +297,7 @@ public class Utility {
         // Determine the number of colors based on the standard deviation
         if (stdDev < 50) {
             // Simple image
-            numberOfColors = 4;
+            numberOfColors = 8;
             int maxNodesToVisit = 11;
             int maxDepth = 11;
 
