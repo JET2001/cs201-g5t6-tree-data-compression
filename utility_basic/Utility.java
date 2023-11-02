@@ -275,7 +275,7 @@ public class Utility {
 
     // uniform quantization
     public int[][][] uniformQuantization(int[][][] imagePixels, int numberOfColors) {
-        int binSize = imagePixels[0].length / numberOfColors;
+        int binSize = 375 / numberOfColors;
         for (int x = 0; x < imagePixels.length; x++) {
             for (int y = 0; y < imagePixels[0].length; y++) {
                 for (int z = 0; z < imagePixels[0][0].length; z++) {
@@ -341,6 +341,8 @@ public class Utility {
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
         // Quantize the image data
         int[][][] quantizedImagePixels = adaptiveQuantization(imagePixels);
+        
+        // quantizedImagePixels = kdQuantization(quantizedImagePixels, numberOfColors, maxNodesToVisit, maxDepth);
 
         // Calculate color frequencies in the image
         Map<Integer, Integer> colorFrequencies = calculateColorFrequencies(quantizedImagePixels);
@@ -352,7 +354,7 @@ public class Utility {
         Map<Integer, String> huffmanCodes = huffmanTree.generateHuffmanCodes();
 
         // Encode the image data using Huffman codes
-        List<String> encodedImageData = encodeImageData(quantizedImagePixels, huffmanCodes);
+        List<String> encodedImageData = encodeImageData(imagePixels, huffmanCodes);
 
         // Build the compressed data string
         String compressedDataString = buildCompressedDataString(encodedImageData);
