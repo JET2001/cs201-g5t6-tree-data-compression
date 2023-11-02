@@ -275,7 +275,7 @@ public class Utility {
 
     // uniform quantization
     public int[][][] uniformQuantization(int[][][] imagePixels, int numberOfColors) {
-        int binSize = imagePixels[0].length / numberOfColors;
+        int binSize = 375 / numberOfColors;
         for (int x = 0; x < imagePixels.length; x++) {
             for (int y = 0; y < imagePixels[0].length; y++) {
                 for (int z = 0; z < imagePixels[0][0].length; z++) {
