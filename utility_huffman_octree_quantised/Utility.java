@@ -158,7 +158,7 @@ public class Utility {
         public void reduceTree() {
             for (int level = 8; level >= 0; level--) {
                 if (levelBuckets.get(level).size() > 0) {
-                    OctreeNode node = levelBuckets.get(level).remove(0);
+                    OctreeNode node = levelBuckets.get(level).remove(0); // remove the first node
                     node.pixelCount /= 8;
                     node.red /= 8;
                     node.green /= 8;
@@ -188,7 +188,7 @@ public class Utility {
         }
     }
 
-    final int numberOfColors = 24; // range from 2 - 256 (24 is the sweet spot)
+    final int numberOfColors = 8; // range from 2 - 256 (24 is the sweet spot)
 
     public int[][][] octreeQuantization(int[][][] imagePixels, int numberOfColors) {
         // Create an Octree and add all colors from the image
@@ -215,35 +215,35 @@ public class Utility {
         return imagePixels;
     }
 
-    public int[][][] dither(int[][][] imagePixels) {
-        int[][][] ditheredImagePixels = new int[imagePixels.length][imagePixels[0].length][imagePixels[0][0].length];
+    // public int[][][] dither(int[][][] imagePixels) {
+    //     int[][][] ditheredImagePixels = new int[imagePixels.length][imagePixels[0].length][imagePixels[0][0].length];
 
-        for (int y = 0; y < imagePixels[0].length; y++) {
-            for (int x = 0; x < imagePixels.length; x++) {
-                for (int z = 0; z < imagePixels[0][0].length; z++) {
-                    int oldPixel = imagePixels[x][y][z];
-                    int newPixel = oldPixel < 128 ? 0 : 255;
-                    ditheredImagePixels[x][y][z] = newPixel;
-                    int quantError = oldPixel - newPixel;
+    //     for (int y = 0; y < imagePixels[0].length; y++) {
+    //         for (int x = 0; x < imagePixels.length; x++) {
+    //             for (int z = 0; z < imagePixels[0][0].length; z++) {
+    //                 int oldPixel = imagePixels[x][y][z];
+    //                 int newPixel = oldPixel < 128 ? 0 : 255;
+    //                 ditheredImagePixels[x][y][z] = newPixel;
+    //                 int quantError = oldPixel - newPixel;
 
-                    if (x + 1 < imagePixels.length) {
-                        imagePixels[x + 1][y][z] += quantError * 7 / 16;
-                    }
-                    if (y + 1 < imagePixels[0].length) {
-                        if (x - 1 >= 0) {
-                            imagePixels[x - 1][y + 1][z] += quantError * 3 / 16;
-                        }
-                        imagePixels[x][y + 1][z] += quantError * 5 / 16;
-                        if (x + 1 < imagePixels.length) {
-                            imagePixels[x + 1][y + 1][z] += quantError * 1 / 16;
-                        }
-                    }
-                }
-            }
-        }
+    //                 if (x + 1 < imagePixels.length) {
+    //                     imagePixels[x + 1][y][z] += quantError * 7 / 16;
+    //                 }
+    //                 if (y + 1 < imagePixels[0].length) {
+    //                     if (x - 1 >= 0) {
+    //                         imagePixels[x - 1][y + 1][z] += quantError * 3 / 16;
+    //                     }
+    //                     imagePixels[x][y + 1][z] += quantError * 5 / 16;
+    //                     if (x + 1 < imagePixels.length) {
+    //                         imagePixels[x + 1][y + 1][z] += quantError * 1 / 16;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        return ditheredImagePixels;
-    }
+    //     return ditheredImagePixels;
+    // }
 
     // uniform quantization
     public int[][][] quantization(int[][][] imagePixels, int numberOfColors) {
@@ -265,7 +265,7 @@ public class Utility {
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
         // Quantize the image data
         int[][][] quantizedImagePixels = quantization(imagePixels, numberOfColors);
-        quantizedImagePixels = octreeQuantization(quantizedImagePixels, 8);
+        // quantizedImagePixels = octreeQuantization(quantizedImagePixels, 8);
 
         // Calculate color frequencies in the image
         Map<Integer, Integer> colorFrequencies = calculateColorFrequencies(quantizedImagePixels);
