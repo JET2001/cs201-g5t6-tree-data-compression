@@ -265,7 +265,7 @@ public class Utility {
     public void Compress(final int[][][] imagePixels, final String outputFileName) throws IOException {
         // Quantize the image data
         int[][][] quantizedImagePixels = quantization(imagePixels, numberOfColors / 6);
-        quantizedImagePixels = octreeQuantization(imagePixels, numberOfColors * 18);
+        quantizedImagePixels = octreeQuantization(quantizedImagePixels, numberOfColors * 18);
 
         // Calculate color frequencies in the image
         Map<Integer, Integer> colorFrequencies = calculateColorFrequencies(quantizedImagePixels);
@@ -307,8 +307,8 @@ public class Utility {
             int[][][] quantizedImagePixels = reconstructImagePixels(huffmanTree, compressedDataByteArray);
 
             // Dequantize the image pixels
-            return quantization(quantizedImagePixels, numberOfColors);
-            //return quantizedImagePixels;
+            // return quantization(quantizedImagePixels, numberOfColors);
+            return quantizedImagePixels;
         }
     }
 

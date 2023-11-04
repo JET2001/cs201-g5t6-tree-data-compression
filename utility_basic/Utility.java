@@ -301,11 +301,14 @@ public class Utility {
             int maxNodesToVisit = 11;
             int maxDepth = 11;
 
+            System.out.println("Simple Image");
+
             int[][][] quantizedImagePixels =  uniformQuantization(imagePixels, numberOfColors);
             return kdQuantization(quantizedImagePixels, maxNodesToVisit, maxDepth);
             
         } else {
             // Complex image
+            System.out.println("Complex Image");
             numberOfColors = 8;
 
             return uniformQuantization(imagePixels, numberOfColors);
